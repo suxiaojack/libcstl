@@ -24,11 +24,8 @@
 #include <cstl/cstl_def.h>
 #include <cstl/cstl_alloc.h>
 #include <cstl/cstl_types.h>
-
-#include <cstl/cstl_pair_private.h>
-#include <cstl/cstl_pair.h>
-
 #include <cstl/cstring.h>
+#include <cstl/cutility.h>
 
 #include "cstl_pair_aux.h"
 
@@ -199,10 +196,7 @@ bool_t pair_equal(const pair_t* cppair_first, const pair_t* cppair_second)
     assert(cppair_second != NULL);
     assert(_pair_is_inited(cppair_first));
     assert(_pair_is_inited(cppair_second));
-
-    if (!_pair_same_type(cppair_first, cppair_second)) {
-        return false;
-    }
+    assert(_pair_same_type(cppair_first, cppair_second));
 
     if (cppair_first == cppair_second) {
         return true;

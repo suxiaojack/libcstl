@@ -1,6 +1,6 @@
 /*
  *  The common define.
- *  Copyright (C)  2008 - 2012  Wangbo
+ *  Copyright (C)  2008 - 2013  Wangbo
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -39,6 +39,9 @@ extern "C" {
 #include <ctype.h>
 #include <float.h>
 #include <time.h>
+#ifndef _MSC_VER
+#   include <stdbool.h>
+#endif
 
 /** constant declaration and macro section **/
 #ifdef _CSTL_UNIT_TESTING
@@ -56,9 +59,9 @@ extern "C" {
 #   define calloc(num, size)  _test_calloc((num), (size), __FILE__, __LINE__)
 #   define free(ptr)          _test_free((ptr), __FILE__, __LINE__)
 */
-#	ifdef NDEBUG
-#		undef NDEBUG
-#	endif
+#    ifdef NDEBUG
+#        undef NDEBUG
+#    endif
 #endif /* _CSTL_UNIT_TESTING */
 
 #ifdef _MSC_VER
@@ -68,18 +71,18 @@ extern "C" {
 /**
  * libcstl version macro.
  */
-#define CSTL_VERSION             20100 /* libcstl version 2.1.0 */
+#define CSTL_VERSION             20300 /* libcstl version 2.3.0 */
 #define CSTL_MAJOR_VERSION       2
-#define CSTL_MINOR_VERSION       1
+#define CSTL_MINOR_VERSION       3
 #define CSTL_REVISION_VERSION    0
 
+#ifdef _MSC_VER
 /**
  * for bool_t type
  */
-#define FALSE   0               /* declaration false bool type */
 #define false   0
-#define TRUE    1               /* declaration true bool type */
 #define true    1
+#endif
 
 /** data type declaration and struct, union, enum section **/
 typedef unsigned char            _byte_t;

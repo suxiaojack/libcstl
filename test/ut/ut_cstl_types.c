@@ -22,7 +22,7 @@
 #include "ut_def.h"
 #include "ut_cstl_types.h"
 
-UT_SUIT_DEFINATION(cstl_types, _type_init_default)
+UT_SUIT_DEFINATION(cstl_types, all_types)
 
 /*
  * test _type_init_default
@@ -308,7 +308,7 @@ void test__type_get_varg_value__long(void** state)
     long l_result = 0;
     _test__get_type(&t_info, "long");
     t_info._t_style = _TYPE_C_BUILTIN;
-    _test__type_get_varg_value__stub(&l_result, &t_info, -3333);
+    _test__type_get_varg_value__stub(&l_result, &t_info, -3333l);
     assert_true(l_result == -3333);
 }
 
@@ -1034,3 +1034,1216 @@ void test__type_register__register(void** state)
     assert_true(pt_type->_t_typedestroy == _test__type_register2_destroy);
 }
 
+/*
+ * test all_types
+ */
+UT_CASE_DEFINATION(all_types)
+void test__all_types__char(void** state)
+{
+    vector_t* pvec = create_vector(char);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__signed_char(void** state)
+{
+    vector_t* pvec = create_vector(signed char);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__unsigned_char(void** state)
+{
+    vector_t* pvec = create_vector(unsigned char);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__short(void** state)
+{
+    vector_t* pvec = create_vector(short);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__signed_short(void** state)
+{
+    vector_t* pvec = create_vector(signed short);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__short_int(void** state)
+{
+    vector_t* pvec = create_vector(short int);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__signed_short_int(void** state)
+{
+    vector_t* pvec = create_vector(signed short int);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__unsigned_short(void** state)
+{
+    vector_t* pvec = create_vector(unsigned short);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__unsigned_short_int(void** state)
+{
+    vector_t* pvec = create_vector(unsigned short int);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__int(void** state)
+{
+    vector_t* pvec = create_vector(int);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__signed(void** state)
+{
+    vector_t* pvec = create_vector(signed );
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__signed_int(void** state)
+{
+    vector_t* pvec = create_vector(signed int);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__unsigned(void** state)
+{
+    vector_t* pvec = create_vector(unsigned);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__unsigned_int(void** state)
+{
+    vector_t* pvec = create_vector(unsigned int);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__long(void** state)
+{
+    vector_t* pvec = create_vector(long);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__signed_long(void** state)
+{
+    vector_t* pvec = create_vector(signed long);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__long_int(void** state)
+{
+    vector_t* pvec = create_vector(long int);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__signed_long_int(void** state)
+{
+    vector_t* pvec = create_vector(signed long int);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__unsigned_long(void** state)
+{
+    vector_t* pvec = create_vector( unsigned  long );
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__unsigned_long_int(void** state)
+{
+    vector_t* pvec = create_vector(unsigned long int);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__float(void** state)
+{
+    vector_t* pvec = create_vector(float);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__double(void** state)
+{
+    vector_t* pvec = create_vector(double);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__long_double(void** state)
+{
+    vector_t* pvec = create_vector(long double);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__cstr(void** state)
+{
+    vector_t* pvec = create_vector(char *);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__pointer(void** state)
+{
+    vector_t* pvec = create_vector(void*);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+struct abc {
+    int a;
+    int b;
+};
+void test__all_types__struct(void** state)
+{
+    vector_t* pvec = NULL;
+    type_register(struct abc, NULL, NULL, NULL, NULL);
+    pvec = create_vector(struct abc);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+enum def {
+    AAA, BBB
+};
+void test__all_types__enum(void** state)
+{
+    vector_t* pvec = NULL;
+    type_register(enum def, NULL, NULL, NULL, NULL);
+    pvec = create_vector(enum def);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+union hij {
+    int a;
+    struct xyz {
+        short b;
+        short c;
+    } xxx;
+};
+void test__all_types__union(void** state)
+{
+    vector_t* pvec = NULL;
+    type_register(union hij, NULL, NULL, NULL, NULL);
+    pvec = create_vector(union hij);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+typedef struct ooo {
+    int a;
+    int b;
+} ooo_t;
+void test__all_types__id(void** state)
+{
+    vector_t* pvec = NULL;
+    type_register(ooo_t, NULL, NULL, NULL, NULL);
+    pvec = create_vector(ooo_t);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__vector(void** state)
+{
+    vector_t* pvec = create_vector(vector_t<int>);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__list(void** state)
+{
+    vector_t* pvec = create_vector(list_t<int>);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__slist(void** state)
+{
+    vector_t* pvec = create_vector(slist_t<int>);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__deque(void** state)
+{
+    vector_t* pvec = create_vector(deque_t<int>);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__queue(void** state)
+{
+    vector_t* pvec = create_vector(queue_t<int>);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__stack(void** state)
+{
+    vector_t* pvec = create_vector(stack_t<int>);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__priority_queue(void** state)
+{
+    vector_t* pvec = create_vector(priority_queue_t<int>);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__set(void** state)
+{
+    vector_t* pvec = create_vector(set_t<int>);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__multiset(void** state)
+{
+    vector_t* pvec = create_vector(multiset_t<int>);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__hash_set(void** state)
+{
+    vector_t* pvec = create_vector(hash_set_t<int>);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__hash_multiset(void** state)
+{
+    vector_t* pvec = create_vector(hash_multiset_t<int>);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__map(void** state)
+{
+    vector_t* pvec = create_vector(map_t<int, int>);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__multimap(void** state)
+{
+    vector_t* pvec = create_vector(multimap_t<int, int>);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__hash_map(void** state)
+{
+    vector_t* pvec = create_vector(hash_map_t<int, int>);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__hash_multimap(void** state)
+{
+    vector_t* pvec = create_vector(hash_multimap_t<int, int>);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__pair(void** state)
+{
+    vector_t* pvec = create_vector(pair_t<int, int>);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__string(void** state)
+{
+    vector_t* pvec = create_vector(string_t);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__cstl_bool(void** state)
+{
+    vector_t* pvec = create_vector(bool_t);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__range(void** state)
+{
+    vector_t* pvec = create_vector(range_t);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__iterator(void** state)
+{
+    vector_t* pvec = create_vector(iterator_t);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__vector_iterator(void** state)
+{
+    vector_t* pvec = create_vector(vector_iterator_t);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__list_iterator(void** state)
+{
+    vector_t* pvec = create_vector(list_iterator_t);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__slist_iterator(void** state)
+{
+    vector_t* pvec = create_vector(slist_iterator_t);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__deque_iterator(void** state)
+{
+    vector_t* pvec = create_vector(deque_iterator_t);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__set_iterator(void** state)
+{
+    vector_t* pvec = create_vector(set_iterator_t);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__map_iterator(void** state)
+{
+    vector_t* pvec = create_vector(map_iterator_t);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__multiset_iterator(void** state)
+{
+    vector_t* pvec = create_vector(multiset_iterator_t);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__multimap_iterator(void** state)
+{
+    vector_t* pvec = create_vector(multimap_iterator_t);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__hash_set_iterator(void** state)
+{
+    vector_t* pvec = create_vector(hash_set_iterator_t);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__hash_map_iterator(void** state)
+{
+    vector_t* pvec = create_vector(hash_map_iterator_t);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__hash_multiset_iterator(void** state)
+{
+    vector_t* pvec = create_vector(hash_multiset_iterator_t);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__hash_multimap_iterator(void** state)
+{
+    vector_t* pvec = create_vector(hash_multimap_iterator_t);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__string_iterator(void** state)
+{
+    vector_t* pvec = create_vector(string_iterator_t);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__input_iterator(void** state)
+{
+    vector_t* pvec = create_vector(input_iterator_t);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__output_iterator(void** state)
+{
+    vector_t* pvec = create_vector(output_iterator_t);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__forward_iterator(void** state)
+{
+    vector_t* pvec = create_vector(forward_iterator_t);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__bidirectional_iterator(void** state)
+{
+    vector_t* pvec = create_vector(bidirectional_iterator_t);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__random_access_iterator(void** state)
+{
+    vector_t* pvec = create_vector(random_access_iterator_t);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__basic_string(void** state)
+{
+    vector_t* pvec = create_vector(basic_string_t<basic_string_t<int>>);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__basic_string_iterator(void** state)
+{
+    vector_t* pvec = create_vector(basic_string_iterator_t);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+#ifndef _MSC_VER
+void test__all_types__bool(void** state)
+{
+    vector_t* pvec = create_vector(_Bool);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__long_long(void** state)
+{
+    vector_t* pvec = create_vector(long long);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__long_long_int(void** state)
+{
+    vector_t* pvec = create_vector(long long int);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__signed_long_long(void** state)
+{
+    vector_t* pvec = create_vector(signed long long);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__signed_long_long_int(void** state)
+{
+    vector_t* pvec = create_vector(signed long long int);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__unsigned_long_long(void** state)
+{
+    vector_t* pvec = create_vector(unsigned long long);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__all_types__unsigned_long_long_int(void** state)
+{
+    vector_t* pvec = create_vector(unsigned long long int);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+#endif
+
+/*
+ * test void* usage
+ */
+UT_CASE_DEFINATION(pointer_usage)
+void test__pointer_usage__create(void** state)
+{
+    vector_t* pvec = create_vector(void*);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__pointer_usage__init_n(void** state)
+{
+    size_t i = 0;
+    vector_t* pvec = create_vector(void *);
+    vector_init_n(pvec, 10);
+    for (i = 0; i < vector_size(pvec); ++i) {
+        assert_true(*(void**)vector_at(pvec, i) == NULL);
+    }
+    vector_destroy(pvec);
+}
+
+void test__pointer_usage__init_elem(void** state)
+{
+    size_t i = 0;
+    vector_t* pvec = create_vector(void*);
+    vector_init_elem(pvec, 10, 0xffff);
+    for (i = 0; i < vector_size(pvec); ++i) {
+        assert_true(*(void**)vector_at(pvec, i) == 0xffff);
+    }
+    vector_destroy(pvec);
+}
+
+void test__pointer_usage__at(void** state)
+{
+    size_t i = 0;
+    vector_t* pvec = create_vector(void*);
+    vector_init_elem(pvec, 10, 0x1111);
+    for (i = 0; i < vector_size(pvec); ++i) {
+        assert_true(*(void**)vector_at(pvec, i) == 0x1111);
+        *(void**)vector_at(pvec, i) = 0xffff;
+    }
+    for (i = 0; i < vector_size(pvec); ++i) {
+        assert_true(*(void**)vector_at(pvec, i) == 0xffff);
+    }
+    vector_destroy(pvec);
+}
+
+void test__pointer_usage__iterator(void** state)
+{
+    iterator_t it;
+    vector_t* pvec = create_vector(void*);
+    vector_init_elem(pvec, 10, 0xffff);
+    for (it = vector_begin(pvec);
+         !iterator_equal(it, vector_end(pvec));
+         it = iterator_next(it)) {
+        void* p = NULL;
+        assert_true(*(void**)iterator_get_pointer(it) == 0xffff);
+        iterator_get_value(it, &p);
+        assert_true(p == 0xffff);
+    }
+    vector_destroy(pvec);
+}
+
+void test__pointer_usage__copy(void** state)
+{
+    size_t i = 0;
+    vector_t* pvec1 = create_vector(void*);
+    vector_t* pvec2 = create_vector(void*);
+    vector_init_elem(pvec1, 10, 0xffff);
+    vector_init_copy_range(pvec2, vector_begin(pvec1), vector_end(pvec1));
+
+    for (i = 0; i < vector_size(pvec1); ++i) {
+        assert_true(*(void**)vector_at(pvec1, i) == *(void**)vector_at(pvec2, i));
+    }
+
+    vector_destroy(pvec1);
+    vector_destroy(pvec2);
+}
+
+void test__pointer_usage__less(void** state)
+{
+    vector_t* pvec1 = create_vector(void*);
+    vector_t* pvec2 = create_vector(void*);
+    vector_init_elem(pvec1, 10, 0x1111);
+    vector_init_elem(pvec2, 10, 0xffff);
+    assert_true(vector_less(pvec1, pvec2));
+    vector_destroy(pvec1);
+    vector_destroy(pvec2);
+}
+
+typedef void* pointer;
+void test__pointer_usage__duplicate(void** state)
+{
+    vector_t* pvec = NULL;
+
+    type_duplicate(pointer, void*);
+    pvec = create_vector(pointer);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+/*
+ * test range_t usage
+ */
+UT_CASE_DEFINATION(range_usage)
+void test__range_usage__create(void** state)
+{
+    vector_t* pvec = create_vector(range_t);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__range_usage__init_n(void** state)
+{
+    size_t i = 0;
+    vector_t* pvec = create_vector(range_t);
+    range_t r;
+    memset(&r, 0x00, sizeof(range_t));
+    vector_init_n(pvec, 10);
+    for (i = 0; i < vector_size(pvec); ++i) {
+        assert_true(memcmp((range_t*)vector_at(pvec, i), &r, sizeof(range_t)) == 0);
+    }
+    vector_destroy(pvec);
+}
+
+void test__range_usage__init_elem(void** state)
+{
+    size_t i = 0;
+    range_t r;
+    vector_t* pvec = create_vector(range_t);
+    memset(&r, 0xcc, sizeof(range_t));
+    vector_init_elem(pvec, 10, &r);
+    for (i = 0; i < vector_size(pvec); ++i) {
+        assert_true(memcmp((range_t*)vector_at(pvec, i), &r, sizeof(range_t)) == 0);
+    }
+    vector_destroy(pvec);
+}
+
+void test__range_usage__at(void** state)
+{
+    size_t i = 0;
+    range_t r1;
+    range_t r2;
+    vector_t* pvec = create_vector(range_t);
+    memset(&r1, 0x00, sizeof(range_t));
+    memset(&r2, 0xcc, sizeof(range_t));
+    vector_init_elem(pvec, 10, &r1);
+    for (i = 0; i < vector_size(pvec); ++i) {
+        assert_true(memcmp((range_t*)vector_at(pvec, i), &r1, sizeof(range_t)) == 0);
+        memcpy((range_t*)vector_at(pvec, i), &r2, sizeof(range_t));
+    }
+    for (i = 0; i < vector_size(pvec); ++i) {
+        assert_true(memcmp((range_t*)vector_at(pvec, i), &r2, sizeof(range_t)) == 0);
+    }
+    vector_destroy(pvec);
+}
+
+void test__range_usage__iterator(void** state)
+{
+    iterator_t it;
+    range_t r;
+    vector_t* pvec = create_vector(range_t);
+    memset(&r, 0x11, sizeof(range_t));
+    vector_init_elem(pvec, 10, &r);
+    for (it = vector_begin(pvec);
+         !iterator_equal(it, vector_end(pvec));
+         it = iterator_next(it)) {
+        range_t rr;
+        assert_true(memcmp((range_t*)iterator_get_pointer(it), &r, sizeof(range_t)) == 0);
+        iterator_get_value(it, &rr);
+        assert_true(memcmp(&r, &rr, sizeof(range_t)) == 0);
+    }
+    vector_destroy(pvec);
+}
+
+void test__range_usage__copy(void** state)
+{
+    size_t i = 0;
+    range_t r;
+    vector_t* pvec1 = create_vector(range_t);
+    vector_t* pvec2 = create_vector(range_t);
+    vector_init_elem(pvec1, 10, &r);
+    vector_init_copy_range(pvec2, vector_begin(pvec1), vector_end(pvec1));
+
+    for (i = 0; i < vector_size(pvec1); ++i) {
+        assert_true(memcmp((range_t*)vector_at(pvec1, i), (range_t*)vector_at(pvec2, i), sizeof(range_t)) == 0);
+    }
+
+    vector_destroy(pvec1);
+    vector_destroy(pvec2);
+}
+
+void test__range_usage__less(void** state)
+{
+    vector_t* pvec1 = create_vector(range_t);
+    vector_t* pvec2 = create_vector(range_t);
+    range_t r1;
+    range_t r2;
+    memset(&r1, 0x11, sizeof(range_t));
+    memset(&r2, 0x22, sizeof(range_t));
+    vector_init_elem(pvec1, 10, &r1);
+    vector_init_elem(pvec2, 10, &r2);
+    assert_true(vector_less(pvec1, pvec2));
+    vector_destroy(pvec1);
+    vector_destroy(pvec2);
+}
+
+typedef range_t my_range;
+void test__range_usage__duplicate(void** state)
+{
+    vector_t* pvec = NULL;
+
+    type_duplicate(my_range, range_t);
+    pvec = create_vector(my_range);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+/*
+ * test basic_string_t usage
+ */
+UT_CASE_DEFINATION(basic_string_usage)
+void test__basic_string_usage__create(void** state)
+{
+    vector_t* pvec = create_vector(basic_string_t<int>);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__basic_string_usage__init_n(void** state)
+{
+    size_t i = 0;
+    vector_t* pvec = create_vector(basic_string_t<int>);
+    vector_init_n(pvec, 10);
+    for (i = 0; i < vector_size(pvec); ++i) {
+        assert_true(basic_string_empty((basic_string_t*)vector_at(pvec, i)));
+    }
+    vector_destroy(pvec);
+}
+
+void test__basic_string_usage__init_elem(void** state)
+{
+    size_t i = 0;
+    basic_string_t* pbstr = create_basic_string(int);
+    vector_t* pvec = create_vector(basic_string_t<int>);
+    basic_string_init_elem(pbstr, 10, 0);
+    vector_init_elem(pvec, 10, pbstr);
+    for (i = 0; i < vector_size(pvec); ++i) {
+        assert_true(basic_string_size((basic_string_t*)vector_at(pvec, i)) == 10);
+    }
+    vector_destroy(pvec);
+    basic_string_destroy(pbstr);
+}
+
+void test__basic_string_usage__at(void** state)
+{
+    size_t i = 0;
+    basic_string_t* pbstr1 = create_basic_string(int);
+    basic_string_t* pbstr2 = create_basic_string(int);
+    vector_t* pvec = create_vector(basic_string_t<int>);
+    basic_string_init_elem(pbstr1, 10, 0);
+    basic_string_init_elem(pbstr2, 3, 0);
+    vector_init_elem(pvec, 10, pbstr1);
+    for (i = 0; i < vector_size(pvec); ++i) {
+        assert_true(basic_string_size((basic_string_t*)vector_at(pvec, i)) == 10);
+        basic_string_assign((basic_string_t*)vector_at(pvec, i), pbstr2);
+    }
+    for (i = 0; i < vector_size(pvec); ++i) {
+        assert_true(basic_string_size((basic_string_t*)vector_at(pvec, i)) == 3);
+    }
+    vector_destroy(pvec);
+    basic_string_destroy(pbstr1);
+    basic_string_destroy(pbstr2);
+}
+
+void test__basic_string_usage__iterator(void** state)
+{
+    iterator_t it;
+    basic_string_t* pbstr = create_basic_string(int);
+    vector_t* pvec = create_vector(basic_string_t<int>);
+    basic_string_init_elem(pbstr, 10, 0);
+    vector_init_elem(pvec, 10, pbstr);
+    for (it = vector_begin(pvec);
+         !iterator_equal(it, vector_end(pvec));
+         it = iterator_next(it)) {
+        basic_string_t* pbstr1 = create_basic_string(int);
+        basic_string_init(pbstr1);
+        assert_true(basic_string_size((basic_string_t*)iterator_get_pointer(it)) == 10);
+        iterator_get_value(it, pbstr1);
+        assert_true(basic_string_size(pbstr1) == 10);
+        basic_string_destroy(pbstr1);
+    }
+    vector_destroy(pvec);
+    basic_string_destroy(pbstr);
+}
+
+void test__basic_string_usage__copy(void** state)
+{
+    size_t i = 0;
+    basic_string_t* pbstr = create_basic_string(int);
+    vector_t* pvec1 = create_vector(basic_string_t<int>);
+    vector_t* pvec2 = create_vector(basic_string_t<int>);
+    basic_string_init_elem(pbstr, 10, 10);
+    vector_init_elem(pvec1, 10, pbstr);
+    vector_init_copy_range(pvec2, vector_begin(pvec1), vector_end(pvec1));
+
+    assert_true(vector_equal(pvec1, pvec2));
+
+    vector_destroy(pvec1);
+    vector_destroy(pvec2);
+    basic_string_destroy(pbstr);
+}
+
+void test__basic_string_usage__less(void** state)
+{
+    vector_t* pvec1 = create_vector(basic_string_t<int>);
+    vector_t* pvec2 = create_vector(basic_string_t<int>);
+    basic_string_t* pbstr1 = create_basic_string(int);
+    basic_string_t* pbstr2 = create_basic_string(int);
+    basic_string_init_elem(pbstr1, 10, 10);
+    basic_string_init_elem(pbstr2, 10, 20);
+    vector_init_elem(pvec1, 10, pbstr1);
+    vector_init_elem(pvec2, 10, pbstr2);
+    assert_true(vector_less(pvec1, pvec2));
+    vector_destroy(pvec1);
+    vector_destroy(pvec2);
+    basic_string_destroy(pbstr1);
+    basic_string_destroy(pbstr2);
+}
+
+typedef basic_string_t my_basic_string;
+void test__basic_string_usage__duplicate(void** state)
+{
+    vector_t* pvec = NULL;
+
+    type_duplicate(my_basic_string, basic_string_t);
+    pvec = create_vector(my_basic_string);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+#ifndef _MSC_VER
+/*
+ * test _Bool usage
+ */
+UT_CASE_DEFINATION(bool_usage)
+void test__bool_usage__create(void** state)
+{
+    vector_t* pvec = create_vector(_Bool);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__bool_usage__init_n(void** state)
+{
+    size_t i = 0;
+    vector_t* pvec = create_vector(_Bool);
+    vector_init_n(pvec, 10);
+    for (i = 0; i < vector_size(pvec); ++i) {
+        assert_true(*(_Bool*)vector_at(pvec, i) == false);
+    }
+    vector_destroy(pvec);
+}
+
+void test__bool_usage__init_elem(void** state)
+{
+    size_t i = 0;
+    vector_t* pvec = create_vector(_Bool);
+    vector_init_elem(pvec, 10, true);
+    for (i = 0; i < vector_size(pvec); ++i) {
+        assert_true(*(_Bool*)vector_at(pvec, i) == true);
+    }
+    vector_destroy(pvec);
+}
+
+void test__bool_usage__at(void** state)
+{
+    size_t i = 0;
+    vector_t* pvec = create_vector(_Bool);
+    vector_init_elem(pvec, 10, true);
+    for (i = 0; i < vector_size(pvec); ++i) {
+        assert_true(*(_Bool*)vector_at(pvec, i) == true);
+        *(_Bool*)vector_at(pvec, i) = false;
+    }
+    for (i = 0; i < vector_size(pvec); ++i) {
+        assert_true(*(_Bool*)vector_at(pvec, i) == false);
+    }
+    vector_destroy(pvec);
+}
+
+void test__bool_usage__iterator(void** state)
+{
+    iterator_t it;
+    vector_t* pvec = create_vector(_Bool);
+    vector_init_elem(pvec, 10, true);
+    for (it = vector_begin(pvec);
+         !iterator_equal(it, vector_end(pvec));
+         it = iterator_next(it)) {
+        _Bool b = false;
+        assert_true(*(_Bool*)iterator_get_pointer(it) == true);
+        iterator_get_value(it, &b);
+        assert_true(b);
+    }
+    vector_destroy(pvec);
+}
+
+void test__bool_usage__copy(void** state)
+{
+    size_t i = 0;
+    vector_t* pvec1 = create_vector(_Bool);
+    vector_t* pvec2 = create_vector(_Bool);
+    vector_init_elem(pvec1, 10, true);
+    vector_init_copy_range(pvec2, vector_begin(pvec1), vector_end(pvec1));
+
+    for (i = 0; i < vector_size(pvec1); ++i) {
+        assert_true(*(_Bool*)vector_at(pvec1, i) == *(_Bool*)vector_at(pvec2, i));
+    }
+
+    vector_destroy(pvec1);
+    vector_destroy(pvec2);
+}
+
+void test__bool_usage__less(void** state)
+{
+    vector_t* pvec1 = create_vector(_Bool);
+    vector_t* pvec2 = create_vector(_Bool);
+    vector_init_elem(pvec1, 10, false);
+    vector_init_elem(pvec2, 10, true);
+    assert_true(vector_less(pvec1, pvec2));
+    vector_destroy(pvec1);
+    vector_destroy(pvec2);
+}
+
+typedef _Bool my_bool;
+void test__bool_usage__duplicate(void** state)
+{
+    vector_t* pvec = NULL;
+
+    type_duplicate(my_bool, _Bool);
+    pvec = create_vector(my_bool);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+/*
+ * test long long usage
+ */
+UT_CASE_DEFINATION(long_long_usage)
+void test__long_long_usage__create(void** state)
+{
+    vector_t* pvec = create_vector(long long);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__long_long_usage__init_n(void** state)
+{
+    size_t i = 0;
+    vector_t* pvec = create_vector(long long int);
+    vector_init_n(pvec, 10);
+    for (i = 0; i < vector_size(pvec); ++i) {
+        assert_true(*(long long*)vector_at(pvec, i) == 0ll);
+    }
+    vector_destroy(pvec);
+}
+
+void test__long_long_usage__init_elem(void** state)
+{
+    size_t i = 0;
+    vector_t* pvec = create_vector(signed long long);
+    vector_init_elem(pvec, 10, 100ll);
+    for (i = 0; i < vector_size(pvec); ++i) {
+        assert_true(*(long long*)vector_at(pvec, i) == 100ll);
+    }
+    vector_destroy(pvec);
+}
+
+void test__long_long_usage__at(void** state)
+{
+    size_t i = 0;
+    vector_t* pvec = create_vector(signed long long int);
+    vector_init_elem(pvec, 10, 100ll);
+    for (i = 0; i < vector_size(pvec); ++i) {
+        assert_true(*(long long*)vector_at(pvec, i) == 100ll);
+        *(long long*)vector_at(pvec, i) = 200ll;
+    }
+    for (i = 0; i < vector_size(pvec); ++i) {
+        assert_true(*(long long*)vector_at(pvec, i) == 200ll);
+    }
+    vector_destroy(pvec);
+}
+
+void test__long_long_usage__iterator(void** state)
+{
+    iterator_t it;
+    vector_t* pvec = create_vector(long long);
+    vector_init_elem(pvec, 10, 100ll);
+    for (it = vector_begin(pvec);
+         !iterator_equal(it, vector_end(pvec));
+         it = iterator_next(it)) {
+        long long b = 0ll;
+        assert_true(*(long long*)iterator_get_pointer(it) == 100ll);
+        iterator_get_value(it, &b);
+        assert_true(b == 100ll);
+    }
+    vector_destroy(pvec);
+}
+
+void test__long_long_usage__copy(void** state)
+{
+    size_t i = 0;
+    vector_t* pvec1 = create_vector(long long);
+    vector_t* pvec2 = create_vector(long long);
+    vector_init_elem(pvec1, 10, 88ll);
+    vector_init_copy_range(pvec2, vector_begin(pvec1), vector_end(pvec1));
+
+    for (i = 0; i < vector_size(pvec1); ++i) {
+        assert_true(*(long long*)vector_at(pvec1, i) == *(long long*)vector_at(pvec2, i));
+    }
+
+    vector_destroy(pvec1);
+    vector_destroy(pvec2);
+}
+
+void test__long_long_usage__less(void** state)
+{
+    vector_t* pvec1 = create_vector(long long);
+    vector_t* pvec2 = create_vector(long long);
+    vector_init_elem(pvec1, 10, 1234ll);
+    vector_init_elem(pvec2, 10, 9939393ll);
+    assert_true(vector_less(pvec1, pvec2));
+    vector_destroy(pvec1);
+    vector_destroy(pvec2);
+}
+
+typedef long long my_ll;
+void test__long_long_usage__duplicate(void** state)
+{
+    vector_t* pvec = NULL;
+
+    type_duplicate(my_ll, long long);
+    pvec = create_vector(my_ll);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+/*
+ * test unsigned long long usage
+ */
+UT_CASE_DEFINATION(ulong_long_usage)
+void test__ulong_long_usage__create(void** state)
+{
+    vector_t* pvec = create_vector(unsigned long long);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+
+void test__ulong_long_usage__init_n(void** state)
+{
+    size_t i = 0;
+    vector_t* pvec = create_vector(unsigned long long int);
+    vector_init_n(pvec, 10);
+    for (i = 0; i < vector_size(pvec); ++i) {
+        assert_true(*(unsigned long long*)vector_at(pvec, i) == 0ll);
+    }
+    vector_destroy(pvec);
+}
+
+void test__ulong_long_usage__init_elem(void** state)
+{
+    size_t i = 0;
+    vector_t* pvec = create_vector( unsigned long long);
+    vector_init_elem(pvec, 10, 100ll);
+    for (i = 0; i < vector_size(pvec); ++i) {
+        assert_true(*(unsigned long long*)vector_at(pvec, i) == 100ll);
+    }
+    vector_destroy(pvec);
+}
+
+void test__ulong_long_usage__at(void** state)
+{
+    size_t i = 0;
+    vector_t* pvec = create_vector( unsigned long long int);
+    vector_init_elem(pvec, 10, 100ll);
+    for (i = 0; i < vector_size(pvec); ++i) {
+        assert_true(*(unsigned long long*)vector_at(pvec, i) == 100ll);
+        *(unsigned long long*)vector_at(pvec, i) = 200ll;
+    }
+    for (i = 0; i < vector_size(pvec); ++i) {
+        assert_true(*(unsigned long long*)vector_at(pvec, i) == 200ll);
+    }
+    vector_destroy(pvec);
+}
+
+void test__ulong_long_usage__iterator(void** state)
+{
+    iterator_t it;
+    vector_t* pvec = create_vector(unsigned long long);
+    vector_init_elem(pvec, 10, 100ll);
+    for (it = vector_begin(pvec);
+         !iterator_equal(it, vector_end(pvec));
+         it = iterator_next(it)) {
+        unsigned long long b = false;
+        assert_true(*(unsigned long long*)iterator_get_pointer(it) == 100ll);
+        iterator_get_value(it, &b);
+        assert_true(b == 100ll);
+    }
+    vector_destroy(pvec);
+}
+
+void test__ulong_long_usage__copy(void** state)
+{
+    size_t i = 0;
+    vector_t* pvec1 = create_vector(unsigned long long);
+    vector_t* pvec2 = create_vector(unsigned long long);
+    vector_init_elem(pvec1, 10, 88ll);
+    vector_init_copy_range(pvec2, vector_begin(pvec1), vector_end(pvec1));
+
+    for (i = 0; i < vector_size(pvec1); ++i) {
+        assert_true(*(unsigned long long*)vector_at(pvec1, i) == *(unsigned long long*)vector_at(pvec2, i));
+    }
+
+    vector_destroy(pvec1);
+    vector_destroy(pvec2);
+}
+
+void test__ulong_long_usage__less(void** state)
+{
+    vector_t* pvec1 = create_vector(unsigned long long);
+    vector_t* pvec2 = create_vector(unsigned long long);
+    vector_init_elem(pvec1, 10, 1234ll);
+    vector_init_elem(pvec2, 10, 9939393ll);
+    assert_true(vector_less(pvec1, pvec2));
+    vector_destroy(pvec1);
+    vector_destroy(pvec2);
+}
+
+typedef unsigned long long my_ull;
+void test__ulong_long_usage__duplicate(void** state)
+{
+    vector_t* pvec = NULL;
+
+    type_duplicate(my_ull, unsigned long long);
+    pvec = create_vector(my_ull);
+    assert_true(pvec != NULL);
+    vector_destroy(pvec);
+}
+#endif

@@ -1078,12 +1078,14 @@ void test__deque_init_elem_auxiliary__successfully_int(void** state)
 
 void test__deque_init_elem_auxiliary__successfully_cstr(void** state)
 {
+    string_t elem;
     deque_t* pdeq = create_deque(char*);
     deque_init_elem(pdeq, 10, "abcdefg");
 
-    _deque_init_elem_auxiliary(pdeq, _deque_iterator_get_pointer_auxiliary(deque_begin(pdeq)));
-    assert_true(strcmp((char*)deque_front(pdeq), "") == 0);
+    _deque_init_elem_auxiliary(pdeq, &elem);
+    assert_true(strcmp(string_c_str(&elem), "") == 0);
 
+    _string_destroy_auxiliary(&elem);
     deque_destroy(pdeq);
 }
 
@@ -1108,6 +1110,7 @@ void test__deque_init_elem_auxiliary__successfully_container(void** state)
     _deque_init_elem_auxiliary(pdeq, &deque);
     assert_true(_deque_is_inited(&deque));
 
+    _deque_destroy_auxiliary(&deque);
     deque_destroy(pdeq);
 }
 

@@ -1,6 +1,6 @@
 /*
  *  The private interface of function.
- *  Copyright (C)  2008 - 2012  Wangbo
+ *  Copyright (C)  2008 - 2014  Wangbo
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -32,15 +32,20 @@ extern "C" {
 /** constant declaration and macro section **/
 
 /** data type declaration and struct, union, enum section **/
-typedef enum _tagfununarytype
-{
+typedef enum _tag_fun_type {
+    _INVALID_FUN,
+
+    /*
+     * unary funtion type
+     */
     _NEGATE_FUN,
     _LOGICAL_NOT_FUN,
-    _RANDOM_NUMBER_FUN
-}fun_unary_type_t;
+    _INCREASE_FUN,
+    _RANDOM_NUMBER_FUN,
 
-typedef enum _tagfunbinarytype
-{
+    /*
+     * binary function type
+     */
     /* arithmetic */
     _PLUS_FUN,
     _MINUS_FUN,
@@ -56,21 +61,37 @@ typedef enum _tagfunbinarytype
     _LESS_EQUAL_FUN,
     /* logical */
     _LOGICAL_AND_FUN,
-    _LOGICAL_OR_FUN,
-    /* increase */
-    _INCREASE_FUN
-}fun_binary_type_t;
+    _LOGICAL_OR_FUN
+} fun_type_t;
 
 /** exported global variable declaration section **/
 
 /** exported function prototype section **/
-/*
- * Select default function.
+/**
+ * Select unary function accroding to unary function type.
+ * @param it_iter       A iterator addressing the element.
+ * @param ftype_type    Unary function type.
+ * @return  Unary function.
+ * @remarks The iterator and unary function type must be valid, otherwise the behavior is undefine.
  */
-extern unary_function_t _fun_get_unary(iterator_t t_iter, fun_unary_type_t t_funtype);
-extern binary_function_t _fun_get_binary(iterator_t t_iter, fun_binary_type_t t_funtype);
+extern ufun_t _fun_get_unary(iterator_t it_iter, fun_type_t ftype_type);
 
-/* increase */
+/**
+ * Select binary function accroding to binary function type.
+ * @param it_iter       A iterator addressing the element.
+ * @param ftype_type    Binary function type.
+ * @return  Binary function.
+ * @remarks The iterator and binary function type must be valid, otherwise the behavior is undefine.
+ */
+extern bfun_t _fun_get_binary(iterator_t it_iter, fun_type_t ftype_type);
+
+/**
+ * Increase.
+ * @param cpv_input     Input.
+ * @param pv_output     Output.
+ * @return  void.
+ * @remarks The input and output must not be NULL, otherwise the behavior is undefined.
+ */
 extern void _fun_increase_char(const void* cpv_input, void* pv_output);
 extern void _fun_increase_uchar(const void* cpv_input, void* pv_output);
 extern void _fun_increase_short(const void* cpv_input, void* pv_output);
@@ -81,6 +102,10 @@ extern void _fun_increase_long(const void* cpv_input, void* pv_output);
 extern void _fun_increase_ulong(const void* cpv_input, void* pv_output);
 extern void _fun_increase_float(const void* cpv_input, void* pv_output);
 extern void _fun_increase_double(const void* cpv_input, void* pv_output);
+#ifndef _MSC_VER
+extern void _fun_increase_long_long(const void* cpv_input, void* pv_output);
+extern void _fun_increase_ulong_long(const void* cpv_input, void* pv_output);
+#endif
 
 #ifdef __cplusplus
 }

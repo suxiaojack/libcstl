@@ -1,6 +1,6 @@
 /*
  *  The implementation of set.
- *  Copyright (C)  2008 - 2012  Wangbo
+ *  Copyright (C)  2008 - 2014  Wangbo
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -25,20 +25,7 @@
 #include <cstl/cstl_alloc.h>
 #include <cstl/cstl_types.h>
 #include <cstl/citerator.h>
-
-#ifdef CSTL_SET_AVL_TREE
-#include <cstl/cstl_avl_tree_iterator.h>
-#include <cstl/cstl_avl_tree_private.h>
-#include <cstl/cstl_avl_tree.h>
-#else
-#include <cstl/cstl_rb_tree_iterator.h>
-#include <cstl/cstl_rb_tree_private.h>
-#include <cstl/cstl_rb_tree.h>
-#endif
-
-#include <cstl/cstl_set_iterator.h>
-#include <cstl/cstl_set_private.h>
-#include <cstl/cstl_set.h>
+#include <cstl/cset.h>
 
 #include "cstl_set_aux.h"
 
@@ -70,7 +57,7 @@ void set_init(set_t* pset_set)
 /**
  * Initialize set container with user define compare function.
  */
-void set_init_ex(set_t* pset_set, binary_function_t bfun_compare)
+void set_init_ex(set_t* pset_set, bfun_t bfun_compare)
 {
     assert(pset_set != NULL);
 
@@ -144,7 +131,7 @@ void set_init_copy_array(set_t* pset_dest, const void* cpv_array, size_t t_count
  * Initialize set container with specific range and compare function.
  */
 void set_init_copy_range_ex(
-    set_t* pset_dest, iterator_t it_begin, iterator_t it_end, binary_function_t bfun_compare)
+    set_t* pset_dest, iterator_t it_begin, iterator_t it_end, bfun_t bfun_compare)
 {
     assert(pset_dest != NULL);
     assert(iterator_equal(it_begin, it_end) || _iterator_before(it_begin, it_end));
@@ -160,7 +147,7 @@ void set_init_copy_range_ex(
  * Initialize set container with specific array and compare function.
  */
 void set_init_copy_array_ex(
-    set_t* pset_dest, const void* cpv_array, size_t t_count, binary_function_t bfun_compare)
+    set_t* pset_dest, const void* cpv_array, size_t t_count, bfun_t bfun_compare)
 {
     assert(pset_dest != NULL);
     assert(cpv_array != NULL);
@@ -314,7 +301,7 @@ set_iterator_t set_rend(const set_t* cpset_set)
 /**
  * Return the compare function of key.
  */
-binary_function_t set_key_comp(const set_t* cpset_set)
+bfun_t set_key_comp(const set_t* cpset_set)
 {
     assert(cpset_set != NULL);
 
@@ -328,7 +315,7 @@ binary_function_t set_key_comp(const set_t* cpset_set)
 /**
  * Return the compare function of value.
  */
-binary_function_t set_value_comp(const set_t* cpset_set)
+bfun_t set_value_comp(const set_t* cpset_set)
 {
     return set_key_comp(cpset_set);
 }
@@ -485,17 +472,17 @@ void set_insert_array(set_t* pset_set, const void* cpv_array, size_t t_count)
 /*
  * Erase an element in an set from specificed position.
  */
-void set_erase_pos(set_t* pset_set, set_iterator_t t_pos)
+void set_erase_pos(set_t* pset_set, set_iterator_t it_pos)
 {
     assert(pset_set != NULL);
-    assert(_SET_ITERATOR_CONTAINER_TYPE(t_pos) == _SET_CONTAINER);
-    assert(_SET_ITERATOR_ITERATOR_TYPE(t_pos) == _BIDIRECTIONAL_ITERATOR);
-    assert(_SET_ITERATOR_CONTAINER(t_pos) == pset_set);
+    assert(_SET_ITERATOR_CONTAINER_TYPE(it_pos) == _SET_CONTAINER);
+    assert(_SET_ITERATOR_ITERATOR_TYPE(it_pos) == _BIDIRECTIONAL_ITERATOR);
+    assert(_SET_ITERATOR_CONTAINER(it_pos) == pset_set);
 
 #ifdef CSTL_SET_AVL_TREE
-    _avl_tree_erase_pos(&pset_set->_t_tree, t_pos);
+    _avl_tree_erase_pos(&pset_set->_t_tree, it_pos);
 #else
-    _rb_tree_erase_pos(&pset_set->_t_tree, t_pos);
+    _rb_tree_erase_pos(&pset_set->_t_tree, it_pos);
 #endif
 }
 

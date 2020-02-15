@@ -1,6 +1,6 @@
 ; Define export functions for libcstl
 LIBRARY libcstl
-VERSION 2.0
+VERSION 2.2
 
 EXPORTS
 ; type interfaces
@@ -273,6 +273,8 @@ EXPORTS
     priority_queue_top                      @9010
     _priority_queue_push                    @9011
     priority_queue_pop                      @9012
+    priority_queue_init_copy_array          @9013
+    priority_queue_init_copy_array_ex       @9014
 
 ; string_t interfaces
     create_string                           @10000
@@ -384,6 +386,7 @@ EXPORTS
     string_input                            @10106
     string_getline                          @10107
     string_getline_delimiter                @10108
+    string_resize_char                      @10109
 
 ; pair_t interfaces
     _create_pair                            @11000
@@ -1075,9 +1078,9 @@ EXPORTS
     fun_less_equal_hash_map                 @24218
     fun_less_equal_hash_multiset            @24219
     fun_less_equal_hash_multimap            @24220
-    fun_logical_and_bool                    @24221
-    fun_logical_or_bool                     @24222
-    fun_logical_not_bool                    @24223
+    fun_logical_and_cstl_bool               @24221
+    fun_logical_or_cstl_bool                @24222
+    fun_logical_not_cstl_bool               @24223
     fun_random_number                       @24224
     fun_default_unary                       @24225
     fun_default_binary                      @24226
@@ -1087,3 +1090,9 @@ EXPORTS
     fun_less_equal_cstr                     @24230
     fun_equal_cstr                          @24231
     fun_not_equal_cstr                      @24232
+    fun_equal_pointer                       @24233
+    fun_not_equal_pointer                   @24234
+    fun_greater_pointer                     @24235
+    fun_greater_equal_pointer               @24236
+    fun_less_pointer                        @24237
+    fun_less_equal_pointer                  @24238

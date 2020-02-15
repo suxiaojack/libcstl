@@ -156,9 +156,241 @@ void test__type_register__null_typename(void** state);
 void test__type_register__registered(void** state);
 void test__type_register__register_default(void** state);
 void test__type_register__register(void** state);
+/*
+ * test all types
+ */
+UT_CASE_DECLARATION(all_types)
+/* C_BUILTIN */
+void test__all_types__char(void** state);
+void test__all_types__signed_char(void** state);
+void test__all_types__unsigned_char(void** state);
+void test__all_types__short(void** state);
+void test__all_types__signed_short(void** state);
+void test__all_types__short_int(void** state);
+void test__all_types__signed_short_int(void** state);
+void test__all_types__unsigned_short(void** state);
+void test__all_types__unsigned_short_int(void** state);
+void test__all_types__int(void** state);
+void test__all_types__signed(void** state);
+void test__all_types__signed_int(void** state);
+void test__all_types__unsigned(void** state);
+void test__all_types__unsigned_int(void** state);
+void test__all_types__long(void** state);
+void test__all_types__signed_long(void** state);
+void test__all_types__long_int(void** state);
+void test__all_types__signed_long_int(void** state);
+void test__all_types__unsigned_long(void** state);
+void test__all_types__unsigned_long_int(void** state);
+void test__all_types__float(void** state);
+void test__all_types__double(void** state);
+void test__all_types__long_double(void** state);
+void test__all_types__cstr(void** state);
+void test__all_types__pointer(void** state);
+/* USER_DEFINE */
+void test__all_types__struct(void** state);
+void test__all_types__enum(void** state);
+void test__all_types__union(void** state);
+void test__all_types__id(void** state);
+/* SEQUENCE */
+void test__all_types__vector(void** state);
+void test__all_types__list(void** state);
+void test__all_types__slist(void** state);
+void test__all_types__deque(void** state);
+void test__all_types__queue(void** state);
+void test__all_types__stack(void** state);
+void test__all_types__priority_queue(void** state);
+void test__all_types__set(void** state);
+void test__all_types__multiset(void** state);
+void test__all_types__hash_set(void** state);
+void test__all_types__hash_multiset(void** state);
+void test__all_types__basic_string(void** state);
+/* RELATION */
+void test__all_types__map(void** state);
+void test__all_types__multimap(void** state);
+void test__all_types__hash_map(void** state);
+void test__all_types__hash_multimap(void** state);
+void test__all_types__pair(void** state);
+/* string_t, bool_t, range_t */
+void test__all_types__string(void** state);
+void test__all_types__cstl_bool(void** state);
+void test__all_types__range(void** state);
+/* ITERATOR */
+void test__all_types__iterator(void** state);
+void test__all_types__vector_iterator(void** state);
+void test__all_types__list_iterator(void** state);
+void test__all_types__slist_iterator(void** state);
+void test__all_types__deque_iterator(void** state);
+void test__all_types__set_iterator(void** state);
+void test__all_types__map_iterator(void** state);
+void test__all_types__multiset_iterator(void** state);
+void test__all_types__multimap_iterator(void** state);
+void test__all_types__hash_set_iterator(void** state);
+void test__all_types__hash_map_iterator(void** state);
+void test__all_types__hash_multiset_iterator(void** state);
+void test__all_types__hash_multimap_iterator(void** state);
+void test__all_types__string_iterator(void** state);
+void test__all_types__input_iterator(void** state);
+void test__all_types__output_iterator(void** state);
+void test__all_types__forward_iterator(void** state);
+void test__all_types__bidirectional_iterator(void** state);
+void test__all_types__random_access_iterator(void** state);
+void test__all_types__basic_string_iterator(void** state);
+#ifndef _MSC_VER
+void test__all_types__bool(void** state);
+void test__all_types__long_long(void** state);
+void test__all_types__long_long_int(void** state);
+void test__all_types__signed_long_long(void** state);
+void test__all_types__signed_long_long_int(void** state);
+void test__all_types__unsigned_long_long(void** state);
+void test__all_types__unsigned_long_long_int(void** state);
+#endif
+/*
+ * test void* usage
+ */
+UT_CASE_DECLARATION(pointer_usage)
+void test__pointer_usage__create(void** state);
+void test__pointer_usage__init_n(void** state);
+void test__pointer_usage__init_elem(void** state);
+void test__pointer_usage__iterator(void** state);
+void test__pointer_usage__at(void** state);
+void test__pointer_usage__copy(void** state);
+void test__pointer_usage__less(void** state);
+void test__pointer_usage__duplicate(void** state);
+/*
+ * test range_t usage
+ */
+UT_CASE_DECLARATION(range_usage)
+void test__range_usage__create(void** state);
+void test__range_usage__init_n(void** state);
+void test__range_usage__init_elem(void** state);
+void test__range_usage__iterator(void** state);
+void test__range_usage__at(void** state);
+void test__range_usage__copy(void** state);
+void test__range_usage__less(void** state);
+void test__range_usage__duplicate(void** state);
+/*
+ * test basic_string_t usage
+ */
+UT_CASE_DECLARATION(basic_string_usage)
+void test__basic_string_usage__create(void** state);
+void test__basic_string_usage__init_n(void** state);
+void test__basic_string_usage__init_elem(void** state);
+void test__basic_string_usage__iterator(void** state);
+void test__basic_string_usage__at(void** state);
+void test__basic_string_usage__copy(void** state);
+void test__basic_string_usage__less(void** state);
+void test__basic_string_usage__duplicate(void** state);
+
+#ifndef _MSC_VER
+/*
+ * test _Bool usage
+ */
+UT_CASE_DECLARATION(bool_usage)
+void test__bool_usage__create(void** state);
+void test__bool_usage__init_n(void** state);
+void test__bool_usage__init_elem(void** state);
+void test__bool_usage__iterator(void** state);
+void test__bool_usage__at(void** state);
+void test__bool_usage__copy(void** state);
+void test__bool_usage__less(void** state);
+void test__bool_usage__duplicate(void** state);
+/*
+ * test long long usage
+ */
+UT_CASE_DECLARATION(long_long_usage)
+void test__long_long_usage__create(void** state);
+void test__long_long_usage__init_n(void** state);
+void test__long_long_usage__init_elem(void** state);
+void test__long_long_usage__iterator(void** state);
+void test__long_long_usage__at(void** state);
+void test__long_long_usage__copy(void** state);
+void test__long_long_usage__less(void** state);
+void test__long_long_usage__duplicate(void** state);
+/*
+ * test unsigned long long usage
+ */
+UT_CASE_DECLARATION(ulong_long_usage)
+void test__ulong_long_usage__create(void** state);
+void test__ulong_long_usage__init_n(void** state);
+void test__ulong_long_usage__init_elem(void** state);
+void test__ulong_long_usage__iterator(void** state);
+void test__ulong_long_usage__at(void** state);
+void test__ulong_long_usage__copy(void** state);
+void test__ulong_long_usage__less(void** state);
+void test__ulong_long_usage__duplicate(void** state);
+#endif
 
 #define UT_CSTL_TYPES_CASE\
-    UT_SUIT_BEGIN(cstl_types, test__type_init_default__null_input),\
+    UT_SUIT_BEGIN(cstl_types, test__all_types__char),\
+    UT_CASE(test__all_types__signed_char),\
+    UT_CASE(test__all_types__unsigned_char),\
+    UT_CASE(test__all_types__short),\
+    UT_CASE(test__all_types__signed_short),\
+    UT_CASE(test__all_types__short_int),\
+    UT_CASE(test__all_types__signed_short_int),\
+    UT_CASE(test__all_types__unsigned_short),\
+    UT_CASE(test__all_types__unsigned_short_int),\
+    UT_CASE(test__all_types__int),\
+    UT_CASE(test__all_types__signed),\
+    UT_CASE(test__all_types__signed_int),\
+    UT_CASE(test__all_types__unsigned),\
+    UT_CASE(test__all_types__unsigned_int),\
+    UT_CASE(test__all_types__long),\
+    UT_CASE(test__all_types__signed_long),\
+    UT_CASE(test__all_types__long_int),\
+    UT_CASE(test__all_types__signed_long_int),\
+    UT_CASE(test__all_types__unsigned_long),\
+    UT_CASE(test__all_types__unsigned_long_int),\
+    UT_CASE(test__all_types__float),\
+    UT_CASE(test__all_types__double),\
+    UT_CASE(test__all_types__long_double),\
+    UT_CASE(test__all_types__cstr),\
+    UT_CASE(test__all_types__pointer),\
+    UT_CASE(test__all_types__struct),\
+    UT_CASE(test__all_types__enum),\
+    UT_CASE(test__all_types__union),\
+    UT_CASE(test__all_types__id),\
+    UT_CASE(test__all_types__vector),\
+    UT_CASE(test__all_types__list),\
+    UT_CASE(test__all_types__slist),\
+    UT_CASE(test__all_types__deque),\
+    UT_CASE(test__all_types__queue),\
+    UT_CASE(test__all_types__stack),\
+    UT_CASE(test__all_types__priority_queue),\
+    UT_CASE(test__all_types__set),\
+    UT_CASE(test__all_types__multiset),\
+    UT_CASE(test__all_types__hash_set),\
+    UT_CASE(test__all_types__hash_multiset),\
+    UT_CASE(test__all_types__map),\
+    UT_CASE(test__all_types__multimap),\
+    UT_CASE(test__all_types__hash_map),\
+    UT_CASE(test__all_types__hash_multimap),\
+    UT_CASE(test__all_types__pair),\
+    UT_CASE(test__all_types__string),\
+    UT_CASE(test__all_types__cstl_bool),\
+    UT_CASE(test__all_types__range),\
+    UT_CASE(test__all_types__basic_string),\
+    UT_CASE(test__all_types__iterator),\
+    UT_CASE(test__all_types__vector_iterator),\
+    UT_CASE(test__all_types__list_iterator),\
+    UT_CASE(test__all_types__slist_iterator),\
+    UT_CASE(test__all_types__deque_iterator),\
+    UT_CASE(test__all_types__set_iterator),\
+    UT_CASE(test__all_types__map_iterator),\
+    UT_CASE(test__all_types__multiset_iterator),\
+    UT_CASE(test__all_types__multimap_iterator),\
+    UT_CASE(test__all_types__hash_set_iterator),\
+    UT_CASE(test__all_types__hash_map_iterator),\
+    UT_CASE(test__all_types__hash_multiset_iterator),\
+    UT_CASE(test__all_types__hash_multimap_iterator),\
+    UT_CASE(test__all_types__string_iterator),\
+    UT_CASE(test__all_types__input_iterator),\
+    UT_CASE(test__all_types__output_iterator),\
+    UT_CASE(test__all_types__forward_iterator),\
+    UT_CASE(test__all_types__bidirectional_iterator),\
+    UT_CASE(test__all_types__random_access_iterator),\
+    UT_CASE(test__all_types__basic_string_iterator),\
+    UT_CASE_BEGIN(_type_init_default, test__type_init_default__null_input),\
     UT_CASE(test__type_init_default__null_output),\
     UT_CASE(test__type_init_default__ok),\
     UT_CASE_BEGIN(_type_less_default, test__type_less_defaule__null_first),\
@@ -264,6 +496,65 @@ void test__type_register__register(void** state);
     UT_CASE(test__type_register__registered),\
     UT_CASE(test__type_register__register_default),\
     UT_CASE(test__type_register__register),\
+    UT_CASE_BEGIN(pointer_usage, test__pointer_usage__create),\
+    UT_CASE(test__pointer_usage__init_n),\
+    UT_CASE(test__pointer_usage__init_elem),\
+    UT_CASE(test__pointer_usage__at),\
+    UT_CASE(test__pointer_usage__iterator),\
+    UT_CASE(test__pointer_usage__copy),\
+    UT_CASE(test__pointer_usage__less),\
+    UT_CASE(test__pointer_usage__duplicate),\
+    UT_CASE_BEGIN(range_usage, test__range_usage__create),\
+    UT_CASE(test__range_usage__init_n),\
+    UT_CASE(test__range_usage__init_elem),\
+    UT_CASE(test__range_usage__at),\
+    UT_CASE(test__range_usage__iterator),\
+    UT_CASE(test__range_usage__copy),\
+    UT_CASE(test__range_usage__less),\
+    UT_CASE(test__range_usage__duplicate),\
+    UT_CASE_BEGIN(basic_string_usage, test__basic_string_usage__create),\
+    UT_CASE(test__basic_string_usage__init_n),\
+    UT_CASE(test__basic_string_usage__init_elem),\
+    UT_CASE(test__basic_string_usage__at),\
+    UT_CASE(test__basic_string_usage__iterator),\
+    UT_CASE(test__basic_string_usage__copy),\
+    UT_CASE(test__basic_string_usage__less),\
+    UT_CASE(test__basic_string_usage__duplicate)
+
+#ifndef _MSC_VER
+#define UT_CSTL_TYPES_CASE_C99\
+    UT_SUIT_BEGIN(cstl_types, test__all_types__bool),\
+    UT_CASE(test__all_types__long_long),\
+    UT_CASE(test__all_types__long_long_int),\
+    UT_CASE(test__all_types__signed_long_long),\
+    UT_CASE(test__all_types__signed_long_long_int),\
+    UT_CASE(test__all_types__unsigned_long_long),\
+    UT_CASE(test__all_types__unsigned_long_long_int),\
+    UT_CASE_BEGIN(bool_usage, test__bool_usage__create),\
+    UT_CASE(test__bool_usage__init_n),\
+    UT_CASE(test__bool_usage__init_elem),\
+    UT_CASE(test__bool_usage__at),\
+    UT_CASE(test__bool_usage__iterator),\
+    UT_CASE(test__bool_usage__copy),\
+    UT_CASE(test__bool_usage__less),\
+    UT_CASE(test__bool_usage__duplicate),\
+    UT_CASE_BEGIN(long_long_usage, test__long_long_usage__create),\
+    UT_CASE(test__long_long_usage__init_n),\
+    UT_CASE(test__long_long_usage__init_elem),\
+    UT_CASE(test__long_long_usage__at),\
+    UT_CASE(test__long_long_usage__iterator),\
+    UT_CASE(test__long_long_usage__copy),\
+    UT_CASE(test__long_long_usage__less),\
+    UT_CASE(test__long_long_usage__duplicate),\
+    UT_CASE_BEGIN(ulong_long_usage, test__ulong_long_usage__create),\
+    UT_CASE(test__ulong_long_usage__init_n),\
+    UT_CASE(test__ulong_long_usage__init_elem),\
+    UT_CASE(test__ulong_long_usage__at),\
+    UT_CASE(test__ulong_long_usage__iterator),\
+    UT_CASE(test__ulong_long_usage__copy),\
+    UT_CASE(test__ulong_long_usage__less),\
+    UT_CASE(test__ulong_long_usage__duplicate)
+#endif
 
 #endif /* _UT_CSTL_TYPES_H_ */
 

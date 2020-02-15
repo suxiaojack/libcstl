@@ -1,6 +1,6 @@
 /*
- *  The private interface of base algorithm.
- *  Copyright (C)  2008 - 2012  Wangbo
+ *  The interface of auxiliary heap.
+ *  Copyright (C)  2008 - 2013  Wangbo
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -20,8 +20,8 @@
  *                 activesys@sina.com.cn
  */
 
-#ifndef _CSTL_ALGOBASE_PRIVATE_H_
-#define _CSTL_ALGOBASE_PRIVATE_H_
+#ifndef _CSTL_HEAP_AUX_H_
+#define _CSTL_HEAP_AUX_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,22 +36,22 @@ extern "C" {
 /** exported global variable declaration section **/
 
 /** exported function prototype section **/
-/*
- * Fill algorithm.
+/**
+ * Adjust specific position element into a heap.
+ * @param it_first      A random-access iterator addressing the position of the first element in the range to be converted into a heap.
+ * @param it_last       A random-access iterator addressing the position one past the final element in the range to be converted into a heap.
+ * @param it_parent     A random-access iterator addressing the position of the parent element in the range to be converted into a heap.
+ * @param bfun_op       User-defined predicate function object that defines sense in which one element is less than another.
+ * @return  void.
+ * @remarks The referenced range must be valid, it_parent must belong to [it_first, it_last), otherwise the behavior is undefined.
  */
-extern void _algo_fill(
-    forward_iterator_t t_first, forward_iterator_t t_last, ...);
-extern void _algo_fill_varg(
-    forward_iterator_t t_first, forward_iterator_t t_last, va_list val_elemlist);
-extern output_iterator_t _algo_fill_n(
-    forward_iterator_t t_first, size_t t_fillsize, ...);
-extern output_iterator_t _algo_fill_n_varg(
-    forward_iterator_t t_first, size_t t_fillsize, va_list val_elemlist);
+extern void _algo_adjust_heap(
+    random_access_iterator_t it_first, random_access_iterator_t it_last, random_access_iterator_t it_parent, bfun_t bfun_op);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _CSTL_ALGOBASE_PRIVATE_H_ */
+#endif /* _CSTL_HEAP_AUX_H_ */
 /** eof **/
 

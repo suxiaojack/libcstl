@@ -1,6 +1,6 @@
 /*
  *  The deque iterator interface for iterator module.
- *  Copyright (C)  2008 - 2012  Wangbo
+ *  Copyright (C)  2008 - 2014  Wangbo
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -159,7 +159,7 @@ extern deque_iterator_t _deque_iterator_prev_n(deque_iterator_t it_iter, int n_s
  *          is undefined. if n_index > 0, iterator move to the begin of the container. if n_index < 0, iterator move to
  *          the end of the container. if n_index == 0, return iterator reference data.
  */
-extern void* _deque_iterator_at(deque_iterator_t t_iter, int n_index);
+extern void* _deque_iterator_at(deque_iterator_t it_iter, int n_index);
 
 /**
  * Calculate the distance between two iterators.

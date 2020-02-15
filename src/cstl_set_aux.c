@@ -25,20 +25,7 @@
 #include <cstl/cstl_alloc.h>
 #include <cstl/cstl_types.h>
 #include <cstl/citerator.h>
-
-#ifdef CSTL_SET_AVL_TREE
-#include <cstl/cstl_avl_tree_iterator.h>
-#include <cstl/cstl_avl_tree_private.h>
-#include <cstl/cstl_avl_tree.h>
-#else
-#include <cstl/cstl_rb_tree_iterator.h>
-#include <cstl/cstl_rb_tree_private.h>
-#include <cstl/cstl_rb_tree.h>
-#endif
-
-#include <cstl/cstl_set_iterator.h>
-#include <cstl/cstl_set_private.h>
-#include <cstl/cstl_set.h>
+#include <cstl/cset.h>
 
 #include "cstl_set_aux.h"
 
@@ -70,7 +57,7 @@ void _set_get_varg_value_auxiliary(set_t* pset_set, va_list val_elemlist, void* 
  */
 void _set_destroy_varg_value_auxiliary(set_t* pset_set, void* pv_varg)
 {
-	bool_t b_result = false;
+    bool_t b_result = false;
 
     assert(pset_set != NULL);
     assert(pv_varg != NULL);

@@ -1,6 +1,6 @@
 /*
  *  The private interface of basic_string.
- *  Copyright (C)  2008 - 2012  Wangbo
+ *  Copyright (C)  2008 - 2014  Wangbo
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -32,14 +32,135 @@ extern "C" {
 /** constant declaration and macro section **/
 
 /** data type declaration and struct, union, enum section **/
+/**
+ * This structure is representation of basic_string_t.
+ * and basic_string_t look like this:
+ *
+ *                     _t_elemsize;
+ *                     _t_length;
+ *                     _t_capacity;
+ *                     _n_refcount;
+ *   _pby_string ----> data
+ */
+typedef struct _tag_basic_string_rep
+{
+    size_t _t_elemsize;
+    size_t _t_length;
+    size_t _t_capacity;
+    int    _n_refcount;
+}_basic_string_rep_t;
+
 typedef struct _tagbasicstring
 {
-    vector_t _vec_base;
+    /* element type information */
+    _typeinfo_t _t_typeinfo;
+
+    /* pointer to actual element string */
+    _byte_t* _pby_string;
 }basic_string_t;
 
 /** exported global variable declaration section **/
 
 /** exported function prototype section **/
+/**
+ * basic_string representation operation
+ */
+/**
+ * Create basic_string representation.
+ * @param t_newcapacity      new capacity.
+ * @param t_oldcapacity      old capacity.
+ * @param t_elemsize         element size.
+ * @return _basic_string_rep_t*
+ * @remarks t_elemsize muse be > 0.
+ */
+extern _basic_string_rep_t* _create_basic_string_representation(size_t t_newcapacity, size_t t_oldcapacity, size_t t_elemsize);
+
+/**
+ * Reduce shared and delete rep if necessary.
+ * @param pt_rep             pointer to basic_string_rep_t;
+ * @param ufun_destroy       destroy for element.
+ * @param _typeinfo_t*       type info.
+ * @return new rep that reduced shared or NULL if the rep is deleted.
+ * @remarks pt_rep and ufun_destroy, must not be NULL.
+ */
+extern _basic_string_rep_t* _basic_string_rep_reduce_shared(_basic_string_rep_t* pt_rep, ufun_t ufun_destroy, _typeinfo_t* pt_typeinfo);
+
+/**
+ * Increase shared.
+ * @param pt_rep             pointer to basic_string_rep_t;
+ * @return void.
+ * @remarks pt_rep must not be NULL.
+ */
+extern void _basic_string_rep_increase_shared(_basic_string_rep_t* pt_rep);
+
+/**
+ * Get data pointer from basic_string_rep.
+ * @param cpt_rep            pointer to basic_string_rep_t;
+ * @return void*
+ * @remarks cpt_rep must not be NULL.
+ */
+extern _byte_t* _basic_string_rep_get_data(const _basic_string_rep_t* cpt_rep);
+
+/**
+ * Get basic_string_rep_t pointer from data.
+ * @param cpt_data            pointer to data;
+ * @return basic_string_rep*
+ * @remarks cpt_data must not be NULL.
+ */
+extern _basic_string_rep_t* _basic_string_rep_get_representation(const _byte_t* cpby_data);
+
+/**
+ * Get length
+ * @param cpt_rep            pointer to basic_string_rep_t;
+ * @return length
+ * @remarks cpt_rep must not be NULL.
+ */
+extern size_t _basic_string_rep_get_length(const _basic_string_rep_t* cpt_rep);
+
+/**
+ * Set length
+ * @param pt_rep             pointer to basic_string_rep_t;
+ * @param t_len              length
+ * @return void
+ * @remarks pt_rep must not be NULL and length muse be less than capacity.
+ */
+extern void _basic_string_rep_set_length(_basic_string_rep_t* pt_rep, size_t t_len);
+
+/**
+ * Check whether the rep is shared.
+ * @param cpt_rep            pointer to basic_string_rep_t;
+ * @return the rep sharing of case.
+ * @remarks cpt_rep must not be NULL.
+ */
+extern bool_t _basic_string_rep_is_shared(const _basic_string_rep_t* cpt_rep);
+
+/**
+ * Set rep as sharable
+ * @param pt_rep             pointer to basic_string_rep_t;
+ * @return void
+ * @remarks pt_rep must not be NULL.
+ */
+extern void _basic_string_rep_set_sharable(_basic_string_rep_t* pt_rep);
+
+/**
+ * Check whether the rep is leaked.
+ * @param cpt_rep            pointer to basic_string_rep_t;
+ * @return the rep leaking of case.
+ * @remarks cpt_rep must not be NULL.
+ */
+extern bool_t _basic_string_rep_is_leaked(const _basic_string_rep_t* cpt_rep);
+
+/**
+ * Set rep as leaked
+ * @param pt_rep             pointer to basic_string_rep_t;
+ * @return void
+ * @remarks pt_rep must not be NULL.
+ */
+extern void _basic_string_rep_set_leaked(_basic_string_rep_t* pt_rep);
+
+/**
+ * basic_string private operation
+ */
 /**
  * Create basic_string container.
  * @param s_typename     element type name.
@@ -217,15 +338,6 @@ extern void _basic_string_push_back(basic_string_t* pt_basic_string, ...);
 extern void _basic_string_push_back_varg(basic_string_t* pt_basic_string, va_list val_elemlist);
 
 /**
- * Erase the last element.
- * @param pt_basic_string      basic_string container.
- * @return void.
- * @remarks if pt_basic_string == NULL or uninitialized, then the bahavior is undefine. basic string container must not be
- *          empty, otherwise the behavior is undefined.
- */
-extern void _basic_string_pop_back(basic_string_t* pt_basic_string);
-
-/**
  * Reset the size of basic_string elements.
  * @param pt_basic_string   basic_string container.
  * @param t_resize          new size of basic_string elements.
@@ -237,7 +349,7 @@ extern void _basic_string_pop_back(basic_string_t* pt_basic_string);
  *          if t_resize greater than current basic_string size, then append elements to the end, and the element is specificed
  *          element.
  */
-extern void _basic_string_resize(basic_string_t* pt_basic_string, size_t t_resize, ...);
+extern void _basic_string_resize_elem(basic_string_t* pt_basic_string, size_t t_resize, ...);
 
 /**
  * Reset the size of basic_string elements, and filled element is from variable argument list.
@@ -251,7 +363,7 @@ extern void _basic_string_resize(basic_string_t* pt_basic_string, size_t t_resiz
  *          if t_resize greater than current basic_string size, then append elements to the end, and the element is from
  *          variable argument list.
  */
-extern void _basic_string_resize_varg(basic_string_t* pt_basic_string, size_t t_resize, va_list val_elemlist);
+extern void _basic_string_resize_elem_varg(basic_string_t* pt_basic_string, size_t t_resize, va_list val_elemlist);
 
 /**
  * Assign new element to basic_string.
@@ -319,7 +431,7 @@ extern basic_string_iterator_t _basic_string_insert(basic_string_t* pt_basic_str
  *          others are not in use.
  */
 extern basic_string_iterator_t _basic_string_insert_n(
-    basic_string_t* pt_basic_string, basic_string_iterator_t t_pos, size_t t_count, ...);
+    basic_string_t* pt_basic_string, basic_string_iterator_t it_pos, size_t t_count, ...);
 
 /**
  * Insert multiple copys of element befor specificed position, the element is from variable argument list.
@@ -334,7 +446,7 @@ extern basic_string_iterator_t _basic_string_insert_n(
  *          others are not in use. the inserted element is from variable argument list.
  */
 extern basic_string_iterator_t _basic_string_insert_n_varg(
-    basic_string_t* pt_basic_string, basic_string_iterator_t t_pos, size_t t_count, va_list val_elemlist);
+    basic_string_t* pt_basic_string, basic_string_iterator_t it_pos, size_t t_count, va_list val_elemlist);
 
 /**
  * Insert multiple copys of element befor specificed position.

@@ -356,37 +356,69 @@ void test__type_destroy_long_double__null_input(void** state);
 void test__type_destroy_long_double__null_output(void** state);
 void test__type_destroy_long_double__ok(void** state);
 /*
- * test _type_init_bool
+ * test _type_init_cstl_bool
  */
-UT_CASE_DECLARATION(_type_init_bool)
-void test__type_init_bool__null_input(void** state);
-void test__type_init_bool__null_output(void** state);
-void test__type_init_bool__ok(void** state);
+UT_CASE_DECLARATION(_type_init_cstl_bool)
+void test__type_init_cstl_bool__null_input(void** state);
+void test__type_init_cstl_bool__null_output(void** state);
+void test__type_init_cstl_bool__ok(void** state);
 /*
- * test _type_copy_bool
+ * test _type_copy_cstl_bool
  */
-UT_CASE_DECLARATION(_type_copy_bool)
-void test__type_copy_bool__null_first(void** state);
-void test__type_copy_bool__null_second(void** state);
-void test__type_copy_bool__null_output(void** state);
-void test__type_copy_bool__ok(void** state);
+UT_CASE_DECLARATION(_type_copy_cstl_bool)
+void test__type_copy_cstl_bool__null_first(void** state);
+void test__type_copy_cstl_bool__null_second(void** state);
+void test__type_copy_cstl_bool__null_output(void** state);
+void test__type_copy_cstl_bool__ok(void** state);
 /*
- * test _type_less_bool
+ * test _type_less_cstl_bool
  */
-UT_CASE_DECLARATION(_type_less_bool)
-void test__type_less_bool__null_first(void** state);
-void test__type_less_bool__null_second(void** state);
-void test__type_less_bool__null_output(void** state);
-void test__type_less_bool__less(void** state);
-void test__type_less_bool__equal(void** state);
-void test__type_less_bool__greater(void** state);
+UT_CASE_DECLARATION(_type_less_cstl_bool)
+void test__type_less_cstl_bool__null_first(void** state);
+void test__type_less_cstl_bool__null_second(void** state);
+void test__type_less_cstl_bool__null_output(void** state);
+void test__type_less_cstl_bool__less(void** state);
+void test__type_less_cstl_bool__equal(void** state);
+void test__type_less_cstl_bool__greater(void** state);
 /*
- * test _type_destroy_bool
+ * test _type_destroy_cstl_bool
  */
-UT_CASE_DECLARATION(_type_destroy_bool)
-void test__type_destroy_bool__null_input(void** state);
-void test__type_destroy_bool__null_output(void** state);
-void test__type_destroy_bool__ok(void** state);
+UT_CASE_DECLARATION(_type_destroy_cstl_bool)
+void test__type_destroy_cstl_bool__null_input(void** state);
+void test__type_destroy_cstl_bool__null_output(void** state);
+void test__type_destroy_cstl_bool__ok(void** state);
+/*
+ * test _type_init_pointer
+ */
+UT_CASE_DECLARATION(_type_init_pointer)
+void test__type_init_pointer__null_input(void** state);
+void test__type_init_pointer__null_output(void** state);
+void test__type_init_pointer__ok(void** state);
+/*
+ * test _type_copy_pointer
+ */
+UT_CASE_DECLARATION(_type_copy_pointer)
+void test__type_copy_pointer__null_first(void** state);
+void test__type_copy_pointer__null_second(void** state);
+void test__type_copy_pointer__null_output(void** state);
+void test__type_copy_pointer__ok(void** state);
+/*
+ * test _type_less_pointer
+ */
+UT_CASE_DECLARATION(_type_less_pointer)
+void test__type_less_pointer__null_first(void** state);
+void test__type_less_pointer__null_second(void** state);
+void test__type_less_pointer__null_output(void** state);
+void test__type_less_pointer__less(void** state);
+void test__type_less_pointer__equal(void** state);
+void test__type_less_pointer__greater(void** state);
+/*
+ * test _type_destroy_pointer
+ */
+UT_CASE_DECLARATION(_type_destroy_pointer)
+void test__type_destroy_pointer__null_input(void** state);
+void test__type_destroy_pointer__null_output(void** state);
+void test__type_destroy_pointer__ok(void** state);
 /*
  * test _type_init_cstr
  */
@@ -995,6 +1027,169 @@ UT_CASE_DECLARATION(_type_destroy_iterator)
 void test__type_destroy_iterator__null_input(void** state);
 void test__type_destroy_iterator__null_output(void** state);
 void test__type_destroy_iterator__ok(void** state);
+/*
+ * test _type_init_range
+ */
+UT_CASE_DECLARATION(_type_init_range)
+void test__type_init_range__null_input(void** state);
+void test__type_init_range__null_output(void** state);
+void test__type_init_range__ok(void** state);
+/*
+ * test _type_copy_range
+ */
+UT_CASE_DECLARATION(_type_copy_range)
+void test__type_copy_range__null_first(void** state);
+void test__type_copy_range__null_second(void** state);
+void test__type_copy_range__null_output(void** state);
+void test__type_copy_range__ok(void** state);
+/*
+ * test _type_less_range
+ */
+UT_CASE_DECLARATION(_type_less_range)
+void test__type_less_range__null_first(void** state);
+void test__type_less_range__null_second(void** state);
+void test__type_less_range__null_output(void** state);
+void test__type_less_range__less(void** state);
+void test__type_less_range__equal(void** state);
+void test__type_less_range__greater(void** state);
+/*
+ * test _type_destroy_range
+ */
+UT_CASE_DECLARATION(_type_destroy_range)
+void test__type_destroy_range__null_input(void** state);
+void test__type_destroy_range__null_output(void** state);
+void test__type_destroy_range__ok(void** state);
+/*
+ * test _type_init_basic_string
+ */
+UT_CASE_DECLARATION(_type_init_basic_string)
+void test__type_init_basic_string__null_input(void** state);
+void test__type_init_basic_string__null_output(void** state);
+void test__type_init_basic_string__ok(void** state);
+/*
+ * test _type_copy_basic_string
+ */
+UT_CASE_DECLARATION(_type_copy_basic_string)
+void test__type_copy_basic_string__null_first(void** state);
+void test__type_copy_basic_string__null_second(void** state);
+void test__type_copy_basic_string__null_output(void** state);
+void test__type_copy_basic_string__ok(void** state);
+/*
+ * test _type_less_basic_string
+ */
+UT_CASE_DECLARATION(_type_less_basic_string)
+void test__type_less_basic_string__null_first(void** state);
+void test__type_less_basic_string__null_second(void** state);
+void test__type_less_basic_string__null_output(void** state);
+void test__type_less_basic_string__less(void** state);
+void test__type_less_basic_string__equal(void** state);
+void test__type_less_basic_string__greater(void** state);
+/*
+ * test _type_destroy_basic_string
+ */
+UT_CASE_DECLARATION(_type_destroy_basic_string)
+void test__type_destroy_basic_string__null_input(void** state);
+void test__type_destroy_basic_string__null_output(void** state);
+void test__type_destroy_basic_string__ok(void** state);
+
+#ifndef _MSC_VER
+/*
+ * test _type_init_bool
+ */
+UT_CASE_DECLARATION(_type_init_bool)
+void test__type_init_bool__null_input(void** state);
+void test__type_init_bool__null_output(void** state);
+void test__type_init_bool__ok(void** state);
+/*
+ * test _type_copy_bool
+ */
+UT_CASE_DECLARATION(_type_copy_bool)
+void test__type_copy_bool__null_first(void** state);
+void test__type_copy_bool__null_second(void** state);
+void test__type_copy_bool__null_output(void** state);
+void test__type_copy_bool__ok(void** state);
+/*
+ * test _type_less_bool
+ */
+UT_CASE_DECLARATION(_type_less_bool)
+void test__type_less_bool__null_first(void** state);
+void test__type_less_bool__null_second(void** state);
+void test__type_less_bool__null_output(void** state);
+void test__type_less_bool__less(void** state);
+void test__type_less_bool__equal(void** state);
+void test__type_less_bool__greater(void** state);
+/*
+ * test _type_destroy_bool
+ */
+UT_CASE_DECLARATION(_type_destroy_bool)
+void test__type_destroy_bool__null_input(void** state);
+void test__type_destroy_bool__null_output(void** state);
+void test__type_destroy_bool__ok(void** state);
+/*
+ * test _type_init_long_long
+ */
+UT_CASE_DECLARATION(_type_init_long_long)
+void test__type_init_long_long__null_input(void** state);
+void test__type_init_long_long__null_output(void** state);
+void test__type_init_long_long__ok(void** state);
+/*
+ * test _type_copy_long_long
+ */
+UT_CASE_DECLARATION(_type_copy_long_long)
+void test__type_copy_long_long__null_first(void** state);
+void test__type_copy_long_long__null_second(void** state);
+void test__type_copy_long_long__null_output(void** state);
+void test__type_copy_long_long__ok(void** state);
+/*
+ * test _type_less_long_long
+ */
+UT_CASE_DECLARATION(_type_less_long_long)
+void test__type_less_long_long__null_first(void** state);
+void test__type_less_long_long__null_second(void** state);
+void test__type_less_long_long__null_output(void** state);
+void test__type_less_long_long__less(void** state);
+void test__type_less_long_long__equal(void** state);
+void test__type_less_long_long__greater(void** state);
+/*
+ * test _type_destroy_long_long
+ */
+UT_CASE_DECLARATION(_type_destroy_long_long)
+void test__type_destroy_long_long__null_input(void** state);
+void test__type_destroy_long_long__null_output(void** state);
+void test__type_destroy_long_long__ok(void** state);
+/*
+ * test _type_init_ulong_long
+ */
+UT_CASE_DECLARATION(_type_init_ulong_long)
+void test__type_init_ulong_long__null_input(void** state);
+void test__type_init_ulong_long__null_output(void** state);
+void test__type_init_ulong_long__ok(void** state);
+/*
+ * test _type_copy_ulong_long
+ */
+UT_CASE_DECLARATION(_type_copy_ulong_long)
+void test__type_copy_ulong_long__null_first(void** state);
+void test__type_copy_ulong_long__null_second(void** state);
+void test__type_copy_ulong_long__null_output(void** state);
+void test__type_copy_ulong_long__ok(void** state);
+/*
+ * test _type_less_ulong_long
+ */
+UT_CASE_DECLARATION(_type_less_ulong_long)
+void test__type_less_ulong_long__null_first(void** state);
+void test__type_less_ulong_long__null_second(void** state);
+void test__type_less_ulong_long__null_output(void** state);
+void test__type_less_ulong_long__less(void** state);
+void test__type_less_ulong_long__equal(void** state);
+void test__type_less_ulong_long__greater(void** state);
+/*
+ * test _type_destroy_ulong_long
+ */
+UT_CASE_DECLARATION(_type_destroy_ulong_long)
+void test__type_destroy_ulong_long__null_input(void** state);
+void test__type_destroy_ulong_long__null_output(void** state);
+void test__type_destroy_ulong_long__ok(void** state);
+#endif
 
 #define UT_CSTL_TYPES_BUILTIN_CASE\
     UT_SUIT_BEGIN(cstl_types_builtin, test__type_init_char__null_input),\
@@ -1173,22 +1368,22 @@ void test__type_destroy_iterator__ok(void** state);
     UT_CASE_BEGIN(_type_destroy_long_double, test__type_destroy_long_double__null_input),\
     UT_CASE(test__type_destroy_long_double__null_output),\
     UT_CASE(test__type_destroy_long_double__ok),\
-    UT_CASE_BEGIN(_type_init_bool, test__type_init_bool__null_input),\
-    UT_CASE(test__type_init_bool__null_output),\
-    UT_CASE(test__type_init_bool__ok),\
-    UT_CASE_BEGIN(_type_copy_bool, test__type_copy_bool__null_first),\
-    UT_CASE(test__type_copy_bool__null_second),\
-    UT_CASE(test__type_copy_bool__null_output),\
-    UT_CASE(test__type_copy_bool__ok),\
-    UT_CASE_BEGIN(_type_less_bool, test__type_less_bool__null_first),\
-    UT_CASE(test__type_less_bool__null_second),\
-    UT_CASE(test__type_less_bool__null_output),\
-    UT_CASE(test__type_less_bool__less),\
-    UT_CASE(test__type_less_bool__equal),\
-    UT_CASE(test__type_less_bool__greater),\
-    UT_CASE_BEGIN(_type_destroy_bool, test__type_destroy_bool__null_input),\
-    UT_CASE(test__type_destroy_bool__null_output),\
-    UT_CASE(test__type_destroy_bool__ok),\
+    UT_CASE_BEGIN(_type_init_cstl_bool, test__type_init_cstl_bool__null_input),\
+    UT_CASE(test__type_init_cstl_bool__null_output),\
+    UT_CASE(test__type_init_cstl_bool__ok),\
+    UT_CASE_BEGIN(_type_copy_cstl_bool, test__type_copy_cstl_bool__null_first),\
+    UT_CASE(test__type_copy_cstl_bool__null_second),\
+    UT_CASE(test__type_copy_cstl_bool__null_output),\
+    UT_CASE(test__type_copy_cstl_bool__ok),\
+    UT_CASE_BEGIN(_type_less_cstl_bool, test__type_less_cstl_bool__null_first),\
+    UT_CASE(test__type_less_cstl_bool__null_second),\
+    UT_CASE(test__type_less_cstl_bool__null_output),\
+    UT_CASE(test__type_less_cstl_bool__less),\
+    UT_CASE(test__type_less_cstl_bool__equal),\
+    UT_CASE(test__type_less_cstl_bool__greater),\
+    UT_CASE_BEGIN(_type_destroy_cstl_bool, test__type_destroy_cstl_bool__null_input),\
+    UT_CASE(test__type_destroy_cstl_bool__null_output),\
+    UT_CASE(test__type_destroy_cstl_bool__ok),\
     UT_CASE_BEGIN(_type_init_cstr, test__type_init_cstr__null_input),\
     UT_CASE(test__type_init_cstr__null_output),\
     UT_CASE(test__type_init_cstr__ok),\
@@ -1492,7 +1687,107 @@ void test__type_destroy_iterator__ok(void** state);
     UT_CASE(test__type_less_iterator__greater),\
     UT_CASE_BEGIN(_type_destroy_iterator, test__type_destroy_iterator__null_input),\
     UT_CASE(test__type_destroy_iterator__null_output),\
-    UT_CASE(test__type_destroy_iterator__ok)
+    UT_CASE(test__type_destroy_iterator__ok),\
+    UT_CASE_BEGIN(_type_init_pointer, test__type_init_pointer__null_input),\
+    UT_CASE(test__type_init_pointer__null_output),\
+    UT_CASE(test__type_init_pointer__ok),\
+    UT_CASE_BEGIN(_type_copy_pointer, test__type_copy_pointer__null_first),\
+    UT_CASE(test__type_copy_pointer__null_second),\
+    UT_CASE(test__type_copy_pointer__null_output),\
+    UT_CASE(test__type_copy_pointer__ok),\
+    UT_CASE_BEGIN(_type_less_pointer, test__type_less_pointer__null_first),\
+    UT_CASE(test__type_less_pointer__null_second),\
+    UT_CASE(test__type_less_pointer__null_output),\
+    UT_CASE(test__type_less_pointer__less),\
+    UT_CASE(test__type_less_pointer__equal),\
+    UT_CASE(test__type_less_pointer__greater),\
+    UT_CASE_BEGIN(_type_destroy_pointer, test__type_destroy_pointer__null_input),\
+    UT_CASE(test__type_destroy_pointer__null_output),\
+    UT_CASE(test__type_destroy_pointer__ok),\
+    UT_CASE_BEGIN(_type_init_range, test__type_init_range__null_input),\
+    UT_CASE(test__type_init_range__null_output),\
+    UT_CASE(test__type_init_range__ok),\
+    UT_CASE_BEGIN(_type_copy_range, test__type_copy_range__null_first),\
+    UT_CASE(test__type_copy_range__null_second),\
+    UT_CASE(test__type_copy_range__null_output),\
+    UT_CASE(test__type_copy_range__ok),\
+    UT_CASE_BEGIN(_type_less_range, test__type_less_range__null_first),\
+    UT_CASE(test__type_less_range__null_second),\
+    UT_CASE(test__type_less_range__null_output),\
+    UT_CASE(test__type_less_range__less),\
+    UT_CASE(test__type_less_range__equal),\
+    UT_CASE(test__type_less_range__greater),\
+    UT_CASE_BEGIN(_type_destroy_range, test__type_destroy_range__null_input),\
+    UT_CASE(test__type_destroy_range__null_output),\
+    UT_CASE(test__type_destroy_range__ok),\
+    UT_CASE_BEGIN(_type_init_basic_string, test__type_init_basic_string__null_input),\
+    UT_CASE(test__type_init_basic_string__null_output),\
+    UT_CASE(test__type_init_basic_string__ok),\
+    UT_CASE_BEGIN(_type_copy_basic_string, test__type_copy_basic_string__null_first),\
+    UT_CASE(test__type_copy_basic_string__null_second),\
+    UT_CASE(test__type_copy_basic_string__null_output),\
+    UT_CASE(test__type_copy_basic_string__ok),\
+    UT_CASE_BEGIN(_type_less_basic_string, test__type_less_basic_string__null_first),\
+    UT_CASE(test__type_less_basic_string__null_second),\
+    UT_CASE(test__type_less_basic_string__null_output),\
+    UT_CASE(test__type_less_basic_string__less),\
+    UT_CASE(test__type_less_basic_string__equal),\
+    UT_CASE(test__type_less_basic_string__greater),\
+    UT_CASE_BEGIN(_type_destroy_basic_string, test__type_destroy_basic_string__null_input),\
+    UT_CASE(test__type_destroy_basic_string__null_output),\
+    UT_CASE(test__type_destroy_basic_string__ok)
+
+#ifndef _MSC_VER
+#define UT_CSTL_TYPES_BUILTIN_CASE_C99\
+    UT_SUIT_BEGIN(cstl_types_builtin, test__type_init_bool__null_input),\
+    UT_CASE(test__type_init_bool__null_output),\
+    UT_CASE(test__type_init_bool__ok),\
+    UT_CASE_BEGIN(_type_copy_bool, test__type_copy_bool__null_first),\
+    UT_CASE(test__type_copy_bool__null_second),\
+    UT_CASE(test__type_copy_bool__null_output),\
+    UT_CASE(test__type_copy_bool__ok),\
+    UT_CASE_BEGIN(_type_less_bool, test__type_less_bool__null_first),\
+    UT_CASE(test__type_less_bool__null_second),\
+    UT_CASE(test__type_less_bool__null_output),\
+    UT_CASE(test__type_less_bool__less),\
+    UT_CASE(test__type_less_bool__equal),\
+    UT_CASE(test__type_less_bool__greater),\
+    UT_CASE_BEGIN(_type_destroy_bool, test__type_destroy_bool__null_input),\
+    UT_CASE(test__type_destroy_bool__null_output),\
+    UT_CASE(test__type_destroy_bool__ok),\
+    UT_CASE_BEGIN(_type_init_long_long, test__type_init_long_long__null_input),\
+    UT_CASE(test__type_init_long_long__null_output),\
+    UT_CASE(test__type_init_long_long__ok),\
+    UT_CASE_BEGIN(_type_copy_long_long, test__type_copy_long_long__null_first),\
+    UT_CASE(test__type_copy_long_long__null_second),\
+    UT_CASE(test__type_copy_long_long__null_output),\
+    UT_CASE(test__type_copy_long_long__ok),\
+    UT_CASE_BEGIN(_type_less_long_long, test__type_less_long_long__null_first),\
+    UT_CASE(test__type_less_long_long__null_second),\
+    UT_CASE(test__type_less_long_long__null_output),\
+    UT_CASE(test__type_less_long_long__less),\
+    UT_CASE(test__type_less_long_long__equal),\
+    UT_CASE(test__type_less_long_long__greater),\
+    UT_CASE_BEGIN(_type_destroy_long_long, test__type_destroy_long_long__null_input),\
+    UT_CASE(test__type_destroy_long_long__null_output),\
+    UT_CASE(test__type_destroy_long_long__ok),\
+    UT_CASE_BEGIN(_type_init_ulong_long, test__type_init_ulong_long__null_input),\
+    UT_CASE(test__type_init_ulong_long__null_output),\
+    UT_CASE(test__type_init_ulong_long__ok),\
+    UT_CASE_BEGIN(_type_copy_ulong_long, test__type_copy_ulong_long__null_first),\
+    UT_CASE(test__type_copy_ulong_long__null_second),\
+    UT_CASE(test__type_copy_ulong_long__null_output),\
+    UT_CASE(test__type_copy_ulong_long__ok),\
+    UT_CASE_BEGIN(_type_less_ulong_long, test__type_less_ulong_long__null_first),\
+    UT_CASE(test__type_less_ulong_long__null_second),\
+    UT_CASE(test__type_less_ulong_long__null_output),\
+    UT_CASE(test__type_less_ulong_long__less),\
+    UT_CASE(test__type_less_ulong_long__equal),\
+    UT_CASE(test__type_less_ulong_long__greater),\
+    UT_CASE_BEGIN(_type_destroy_ulong_long, test__type_destroy_ulong_long__null_input),\
+    UT_CASE(test__type_destroy_ulong_long__null_output),\
+    UT_CASE(test__type_destroy_ulong_long__ok)
+#endif
 
 #endif /* _UT_CSTL_TYPES_BUILTIN_H_ */
 

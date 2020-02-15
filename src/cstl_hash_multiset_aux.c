@@ -25,15 +25,7 @@
 #include <cstl/cstl_alloc.h>
 #include <cstl/cstl_types.h>
 #include <cstl/citerator.h>
-
-#include <cstl/cvector.h>
-#include <cstl/cstl_hashtable_iterator.h>
-#include <cstl/cstl_hashtable_private.h>
-#include <cstl/cstl_hashtable.h>
-
-#include <cstl/cstl_hash_multiset_iterator.h>
-#include <cstl/cstl_hash_multiset_private.h>
-#include <cstl/cstl_hash_multiset.h>
+#include <cstl/chash_set.h>
 
 #include "cstl_hash_multiset_aux.h"
 
@@ -65,7 +57,7 @@ void _hash_multiset_get_varg_value_auxiliary(hash_multiset_t* phmset_set, va_lis
  */
 void _hash_multiset_destroy_varg_value_auxiliary(hash_multiset_t* phmset_set, void* pv_varg)
 {
-	bool_t b_result = false;
+    bool_t b_result = false;
 
     assert(phmset_set != NULL);
     assert(pv_varg != NULL);

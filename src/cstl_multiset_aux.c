@@ -25,20 +25,7 @@
 #include <cstl/cstl_alloc.h>
 #include <cstl/cstl_types.h>
 #include <cstl/citerator.h>
-
-#ifdef CSTL_MULTISET_AVL_TREE
-#include <cstl/cstl_avl_tree_iterator.h>
-#include <cstl/cstl_avl_tree_private.h>
-#include <cstl/cstl_avl_tree.h>
-#else
-#include <cstl/cstl_rb_tree_iterator.h>
-#include <cstl/cstl_rb_tree_private.h>
-#include <cstl/cstl_rb_tree.h>
-#endif
-
-#include <cstl/cstl_multiset_iterator.h>
-#include <cstl/cstl_multiset_private.h>
-#include <cstl/cstl_multiset.h>
+#include <cstl/cset.h>
 
 #include "cstl_multiset_aux.h"
 
@@ -70,7 +57,7 @@ void _multiset_get_varg_value_auxiliary(multiset_t* pmset_mset, va_list val_elem
  */
 void _multiset_destroy_varg_value_auxiliary(multiset_t* pmset_mset, void* pv_varg)
 {
-	bool_t b_result = false;
+    bool_t b_result = false;
 
     assert(pmset_mset != NULL);
     assert(pv_varg != NULL);

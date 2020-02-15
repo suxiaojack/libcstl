@@ -792,6 +792,7 @@ void test__list_get_varg_value_auxiliary__cstr(void** state)
     _wrapper_list_get_varg_value_auxiliary(plist, pt_node, "abcdefg");
     assert_true(strcmp(string_c_str((string_t*)pt_node->_pby_data), "abcdefg") == 0);
 
+    _string_destroy_auxiliary(pt_node->_pby_data);
     free(pt_node);
     list_destroy(plist);
 }
@@ -808,6 +809,7 @@ void test__list_get_varg_value_auxiliary__libcstl_builtin(void** state)
     _wrapper_list_get_varg_value_auxiliary(plist, pt_node, pvec);
     assert_true(vector_equal((vector_t*)pt_node->_pby_data, pvec));
 
+    _vector_destroy_auxiliary((vector_t*)pt_node->_pby_data);
     free(pt_node);
     list_destroy(plist);
     vector_destroy(pvec);
@@ -936,6 +938,7 @@ void test__list_init_node_auxiliary__cstr(void** state)
     _list_init_node_auxiliary(plist, pt_node);
     assert_true(strcmp(string_c_str((string_t*)pt_node->_pby_data), "") == 0);
 
+    _list_destroy_varg_value_auxiliary(plist, pt_node);
     free(pt_node);
     list_destroy(plist);
 }

@@ -1,6 +1,6 @@
 /*
  *  The implementation of cstl types parse functions.
- *  Copyright (C)  2008 - 2012  Wangbo
+ *  Copyright (C)  2008 - 2014  Wangbo
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -31,10 +31,10 @@
 
 /** local constant declaration and local macro section **/
 #define _TOKEN_MATCH(s_tokentext, s_formalname)\
-    do{\
+    do {\
         assert(strncmp(_gt_typeanalysis._s_tokentext, s_tokentext, _TYPE_NAME_SIZE) == 0);\
         strncat(s_formalname, _gt_typeanalysis._s_tokentext, _TYPE_NAME_SIZE);\
-    }while(false)
+    } while (false)
 #define _TOKEN_MATCH_SPACE(s_formalname)\
     strncat(s_formalname, _TOKEN_TEXT_SPACE, _TYPE_NAME_SIZE)
 #define _TOKEN_MATCH_IDENTIFIER(s_formalname)\
@@ -48,8 +48,9 @@
 #define _TOKEN_TEXT_DOUBLE                         "double"
 #define _TOKEN_TEXT_SIGNED                         "signed"
 #define _TOKEN_TEXT_UNSIGNED                       "unsigned"
-#define _TOKEN_TEXT_CHAR_POINTER                   "char*"
-#define _TOKEN_TEXT_BOOL                           "bool_t"
+#define _TOKEN_TEXT_VOID                           "void"
+#define _TOKEN_TEXT_CSTL_BOOL                      "bool_t"
+#define _TOKEN_TEXT_BOOL                           "_Bool"
 #define _TOKEN_TEXT_STRUCT                         "struct"
 #define _TOKEN_TEXT_ENUM                           "enum"
 #define _TOKEN_TEXT_UNION                          "union"
@@ -70,6 +71,8 @@
 #define _TOKEN_TEXT_HASH_MULTIMAP                  "hash_multimap_t"
 #define _TOKEN_TEXT_PAIR                           "pair_t"
 #define _TOKEN_TEXT_STRING                         "string_t"
+#define _TOKEN_TEXT_RANGE                          "range_t"
+#define _TOKEN_TEXT_BASIC_STRING                   "basic_string_t"
 #define _TOKEN_TEXT_ITERATOR                       "iterator_t"
 #define _TOKEN_TEXT_VECTOR_ITERATOR                "vector_iterator_t"
 #define _TOKEN_TEXT_LIST_ITERATOR                  "list_iterator_t"
@@ -89,10 +92,12 @@
 #define _TOKEN_TEXT_FORWARD_ITERATOR               "forward_iterator_t"
 #define _TOKEN_TEXT_BIDIRECTIONAL_ITERATOR         "bidirectional_iterator_t"
 #define _TOKEN_TEXT_RANDOM_ACCESS_ITERATOR         "random_access_iterator_t"
+#define _TOKEN_TEXT_BASIC_STRING_ITERATOR          "basic_string_iterator_t"
 #define _TOKEN_TEXT_SPACE                          " "
 #define _TOKEN_TEXT_LEFT_BRACKET                   "<"
 #define _TOKEN_TEXT_RIGHT_BRACKET                  ">"
 #define _TOKEN_TEXT_COMMA                          ","
+#define _TOKEN_TEXT_POINTER                        "*"
 #define _TOKEN_TEXT_EMPTY                          ""
 #define _TOKEN_CHARACTER_BLANK                     ' '
 #define _TOKEN_CHARACTER_LEFT_BRACKET              '<'
@@ -124,7 +129,8 @@ static keytable_t _sgt_table[] = {
     {_TOKEN_KEY_DOUBLE,                 _TOKEN_TEXT_DOUBLE},
     {_TOKEN_KEY_SIGNED,                 _TOKEN_TEXT_SIGNED},
     {_TOKEN_KEY_UNSIGNED,               _TOKEN_TEXT_UNSIGNED},
-    {_TOKEN_KEY_CHAR_POINTER,           _TOKEN_TEXT_CHAR_POINTER},
+    {_TOKEN_KEY_VOID,                   _TOKEN_TEXT_VOID},
+    {_TOKEN_KEY_CSTL_BOOL,              _TOKEN_TEXT_CSTL_BOOL},
     {_TOKEN_KEY_BOOL,                   _TOKEN_TEXT_BOOL},
     {_TOKEN_KEY_STRUCT,                 _TOKEN_TEXT_STRUCT},
     {_TOKEN_KEY_ENUM,                   _TOKEN_TEXT_ENUM},
@@ -146,6 +152,8 @@ static keytable_t _sgt_table[] = {
     {_TOKEN_KEY_HASH_MULTIMAP,          _TOKEN_TEXT_HASH_MULTIMAP},
     {_TOKEN_KEY_PAIR,                   _TOKEN_TEXT_PAIR},
     {_TOKEN_KEY_STRING,                 _TOKEN_TEXT_STRING},
+    {_TOKEN_KEY_RANGE,                  _TOKEN_TEXT_RANGE},
+    {_TOKEN_KEY_BASIC_STRING,           _TOKEN_TEXT_BASIC_STRING},
     {_TOKEN_KEY_ITERATOR,               _TOKEN_TEXT_ITERATOR},
     {_TOKEN_KEY_VECTOR_ITERATOR,        _TOKEN_TEXT_VECTOR_ITERATOR},
     {_TOKEN_KEY_LIST_ITERATOR,          _TOKEN_TEXT_LIST_ITERATOR},
@@ -165,6 +173,7 @@ static keytable_t _sgt_table[] = {
     {_TOKEN_KEY_FORWARD_ITERATOR,       _TOKEN_TEXT_FORWARD_ITERATOR},
     {_TOKEN_KEY_BIDIRECTIONAL_ITERATOR, _TOKEN_TEXT_BIDIRECTIONAL_ITERATOR},
     {_TOKEN_KEY_RANDOM_ACCESS_ITERATOR, _TOKEN_TEXT_RANDOM_ACCESS_ITERATOR},
+    {_TOKEN_KEY_BASIC_STRING_ITERATOR,  _TOKEN_TEXT_BASIC_STRING_ITERATOR},
     {_TOKEN_IDENTIFIER,                 NULL}
 };
 
@@ -175,25 +184,25 @@ static keytable_t _sgt_table[] = {
 _typestyle_t _type_get_style(const char* s_typename, char* s_formalname)
 {
     /*
-     * this parser algorithm is associated with BNF in cstl.bnf that is issured by
-     * activesys.cublog.cn
+     * this parser algorithm is associated with BNF in file doc/project/libcstl.bnf.
      */
-    char   s_tokentext[_TYPE_NAME_SIZE + 1];
-    char   s_userdefine[_TYPE_NAME_SIZE + 1];
-    _typestyle_t t_style = _TYPE_INVALID;
+    char            s_userdefine[_TYPE_NAME_SIZE + 1];
+    _typestyle_t    t_style = _TYPE_INVALID;
 
     assert(s_typename != NULL);
     assert(s_formalname != NULL);
+    assert(strlen(s_typename) <= _TYPE_NAME_SIZE);
 
-    if (strlen(s_typename) > _TYPE_NAME_SIZE) {
-        return _TYPE_INVALID;
+    /* initialize an array efficently */
+    s_formalname[0] = s_formalname[_TYPE_NAME_SIZE] = '\0';
+
+    /* find type style cache */
+    if ((t_style = _type_cache_find(s_typename, s_formalname)) != _TYPE_INVALID) {
+        return t_style;
     }
 
-    memset(s_formalname, '\0', _TYPE_NAME_SIZE+1);
-    memset(s_tokentext, '\0', _TYPE_NAME_SIZE+1);
-    memset(s_userdefine, '\0', _TYPE_NAME_SIZE+1);
-
     /* initialize the type analysis */
+    s_userdefine[0] = s_userdefine[_TYPE_NAME_SIZE] = '\0';
     memset(_gt_typeanalysis._s_typename, '\0', _TYPE_NAME_SIZE+1);
     memset(_gt_typeanalysis._s_tokentext, '\0', _TYPE_NAME_SIZE+1);
     _gt_typeanalysis._t_index = 0;
@@ -212,7 +221,8 @@ _typestyle_t _type_get_style(const char* s_typename, char* s_formalname)
         case _TOKEN_KEY_DOUBLE:
         case _TOKEN_KEY_SIGNED:
         case _TOKEN_KEY_UNSIGNED:
-        case _TOKEN_KEY_CHAR_POINTER:
+        case _TOKEN_KEY_VOID:
+        case _TOKEN_KEY_CSTL_BOOL:
         case _TOKEN_KEY_BOOL:
             t_style = _type_parse_c_builtin(s_formalname) ? _TYPE_C_BUILTIN : _TYPE_INVALID;
             break;
@@ -246,6 +256,8 @@ _typestyle_t _type_get_style(const char* s_typename, char* s_formalname)
         case _TOKEN_KEY_HASH_MULTIMAP:
         case _TOKEN_KEY_PAIR:
         case _TOKEN_KEY_STRING:
+        case _TOKEN_KEY_RANGE:
+        case _TOKEN_KEY_BASIC_STRING:
         case _TOKEN_KEY_ITERATOR:
         case _TOKEN_KEY_VECTOR_ITERATOR:
         case _TOKEN_KEY_LIST_ITERATOR:
@@ -265,6 +277,7 @@ _typestyle_t _type_get_style(const char* s_typename, char* s_formalname)
         case _TOKEN_KEY_FORWARD_ITERATOR:
         case _TOKEN_KEY_BIDIRECTIONAL_ITERATOR:
         case _TOKEN_KEY_RANDOM_ACCESS_ITERATOR:
+        case _TOKEN_KEY_BASIC_STRING_ITERATOR:
             t_style = _type_parse_cstl_builtin(s_formalname) ? _TYPE_CSTL_BUILTIN : _TYPE_INVALID;
             break;
         default:
@@ -273,7 +286,14 @@ _typestyle_t _type_get_style(const char* s_typename, char* s_formalname)
     }
 
     _type_get_token();
-    return _gt_typeanalysis._t_token == _TOKEN_END_OF_INPUT ? t_style : _TYPE_INVALID;
+    t_style = _gt_typeanalysis._t_token == _TOKEN_END_OF_INPUT ? t_style : _TYPE_INVALID;
+
+    /* update type style cache */
+    if (t_style != _TYPE_INVALID) {
+        _type_cache_update(s_typename, s_formalname, t_style);
+    }
+
+    return t_style;
 }
 
 /**
@@ -310,6 +330,10 @@ void _type_get_token(void)
                     _gt_typeanalysis._s_tokentext[t_tokentextindex++] = _gt_typeanalysis._s_typename[_gt_typeanalysis._t_index++];
                     _gt_typeanalysis._t_token = _TOKEN_SIGN_COMMA;
                     t_lexstate = _LEX_ACCEPT;
+                } else if (_gt_typeanalysis._s_typename[_gt_typeanalysis._t_index] == _TOKEN_CHARACTER_POINTER) {
+                    _gt_typeanalysis._s_tokentext[t_tokentextindex++] = _gt_typeanalysis._s_typename[_gt_typeanalysis._t_index++];
+                    _gt_typeanalysis._t_token = _TOKEN_SIGN_POINTER;
+                    t_lexstate = _LEX_ACCEPT;
                 } else if (isspace(_gt_typeanalysis._s_typename[_gt_typeanalysis._t_index])) {
                     _gt_typeanalysis._t_index++;
                     t_lexstate = _LEX_START;
@@ -342,17 +366,6 @@ void _type_get_token(void)
 
     /* if token is identifier then check is keyword */
     if (_gt_typeanalysis._t_token == _TOKEN_IDENTIFIER) {
-        /* handle pointer type "type*", "type *", "type   *", "type  *  * * *" and so on */
-        while (true) {
-            if (_gt_typeanalysis._s_typename[_gt_typeanalysis._t_index] == _TOKEN_CHARACTER_POINTER) {
-                _gt_typeanalysis._s_tokentext[t_tokentextindex++] = _gt_typeanalysis._s_typename[_gt_typeanalysis._t_index++];
-            } else if (_gt_typeanalysis._s_typename[_gt_typeanalysis._t_index] == _TOKEN_CHARACTER_BLANK) {
-                _gt_typeanalysis._t_index++;
-            } else {
-                break;
-            }
-        }
-
         while (_sgt_table[t_keyindex]._s_tokentext != NULL) {
             if (strncmp(_gt_typeanalysis._s_tokentext, _sgt_table[t_keyindex]._s_tokentext, _TYPE_NAME_SIZE) == 0) {
                 _gt_typeanalysis._t_token = _sgt_table[t_keyindex]._t_token;
@@ -394,7 +407,7 @@ void _type_token_rollback(void)
 bool_t _type_parse_c_builtin(char* s_formalname)
 {
     assert(s_formalname != NULL);
-    /* C_BUILTIN -> SIMPLE_BUILTIN | SIGNED_BUILTIN | UNSIGNED_BUILTIN */
+    /* C_BUILTIN -> SIMPLE_BUILTIN | SIGNED_BUILTIN | UNSIGNED_BUILTIN | POINTER_BUILTIN */
     switch (_gt_typeanalysis._t_token) {
         /* C_BUILTIN -> SIMPLE_BUILTIN */
         case _TOKEN_KEY_CHAR:
@@ -403,7 +416,7 @@ bool_t _type_parse_c_builtin(char* s_formalname)
         case _TOKEN_KEY_LONG:
         case _TOKEN_KEY_FLOAT:
         case _TOKEN_KEY_DOUBLE:
-        case _TOKEN_KEY_CHAR_POINTER:
+        case _TOKEN_KEY_CSTL_BOOL:
         case _TOKEN_KEY_BOOL:
             return _type_parse_simple_builtin(s_formalname);
             break;
@@ -415,6 +428,50 @@ bool_t _type_parse_c_builtin(char* s_formalname)
         case _TOKEN_KEY_UNSIGNED:
             return _type_parse_unsigned_builtin(s_formalname);
             break;
+        /* C_BUILTIN -> POINTER_BUILTIN */
+        case _TOKEN_KEY_VOID:
+            return _type_parse_pointer_builtin(s_formalname);
+            break;
+        default:
+            return false;
+            break;
+    }
+}
+
+bool_t _type_parse_pointer_builtin(char* s_formalname)
+{
+    assert(s_formalname != NULL);
+    /* POINTER_BUILTIN -> void * */
+    switch (_gt_typeanalysis._t_token) {
+        case _TOKEN_KEY_VOID:
+            _TOKEN_MATCH(_TOKEN_TEXT_VOID, s_formalname);
+            _type_get_token();
+            _TOKEN_MATCH(_TOKEN_TEXT_POINTER, s_formalname);
+            return true;
+            break;
+        default:
+            return false;
+            break;
+    }
+}
+
+bool_t _type_parse_pointer_suffix(char* s_formalname)
+{
+    assert(s_formalname != NULL);
+    /* POINTER_SUFFIX -> * | $ */
+    switch (_gt_typeanalysis._t_token) {
+        /* POINTER_SUFFIX -> * */
+        case _TOKEN_SIGN_POINTER:
+            _TOKEN_MATCH(_TOKEN_TEXT_POINTER, s_formalname);
+            return true;
+            break;
+        /* POINTER_SUFFIX -> $ */
+        case _TOKEN_END_OF_INPUT:
+        case _TOKEN_SIGN_RIGHT_BRACKET:
+        case _TOKEN_SIGN_COMMA:
+            _type_token_rollback();
+            return true;
+            break;
         default:
             return false;
             break;
@@ -423,8 +480,6 @@ bool_t _type_parse_c_builtin(char* s_formalname)
 
 bool_t _type_parse_common_suffix(char* s_formalname)
 {
-    char* pc_pointersign = NULL;
-
     assert(s_formalname != NULL);
     /* COMMON_SUFFIX -> {+' '}int | $ */
     switch (_gt_typeanalysis._t_token) {
@@ -441,20 +496,31 @@ bool_t _type_parse_common_suffix(char* s_formalname)
             _type_token_rollback();
             return true;
             break;
-        /* COMMON_SUFFIX -> {+' '}int*... */
-        case _TOKEN_IDENTIFIER:
-            pc_pointersign = strchr(_gt_typeanalysis._s_tokentext, '*');
-            if (pc_pointersign == NULL) {
-                /* not pointer type */
-                return false;
-            }
-            if (strncmp(_gt_typeanalysis._s_tokentext, "int", pc_pointersign - _gt_typeanalysis._s_tokentext) != 0) {
-                /* not the pointer of int type */
-                return false;
-            }
+        default:
+            return false;
+            break;
+    }
+}
+
+
+bool_t _type_parse_complex_long_suffix(char* s_formalname)
+{
+    assert(s_formalname != NULL);
+    /* COMPLEX_LONG_SUFFIX -> {+' '}long COMMON_SUFFIX | COMMON_SUFFIX */
+    switch (_gt_typeanalysis._t_token) {
+        /* COMPLEX_LONG_SUFFIX -> {+' '}long COMMON_SUFFIX */
+        case _TOKEN_KEY_LONG:
             _TOKEN_MATCH_SPACE(s_formalname);
-            _TOKEN_MATCH_IDENTIFIER(s_formalname);
-            return true;
+            _TOKEN_MATCH(_TOKEN_TEXT_LONG, s_formalname);
+            _type_get_token();
+            return _type_parse_common_suffix(s_formalname);
+            break;
+        /* COMPLEX_LONG_SUFFIX -> COMMON_SUFFIX */
+        case _TOKEN_KEY_INT:
+        case _TOKEN_END_OF_INPUT:
+        case _TOKEN_SIGN_RIGHT_BRACKET:
+        case _TOKEN_SIGN_COMMA:
+            return _type_parse_common_suffix(s_formalname);
             break;
         default:
             return false;
@@ -464,10 +530,8 @@ bool_t _type_parse_common_suffix(char* s_formalname)
 
 bool_t _type_parse_simple_long_suffix(char* s_formalname)
 {
-    char* pc_pointersign = NULL;
-
     assert(s_formalname != NULL);
-    /* SIMPLE_LONG_SUFFIX -> {+' '}double | COMMON_SUFFIX */
+    /* SIMPLE_LONG_SUFFIX -> {+' '}double | COMPLEX_LONG_SUFFIX */
     switch (_gt_typeanalysis._t_token) {
         /* SIMPLE_LONG_SUFFIX -> {+' '}double */
         case _TOKEN_KEY_DOUBLE:
@@ -475,27 +539,13 @@ bool_t _type_parse_simple_long_suffix(char* s_formalname)
             _TOKEN_MATCH(_TOKEN_TEXT_DOUBLE, s_formalname);
             return true;
             break;
-        /* SIMPLE_LONG_SUFFIX -> COMMON_SUFFIX */
+        /* SIMPLE_LONG_SUFFIX -> COMPLEX_LONG_SUFFIX */
+        case _TOKEN_KEY_LONG:
         case _TOKEN_KEY_INT:
         case _TOKEN_END_OF_INPUT:
         case _TOKEN_SIGN_RIGHT_BRACKET:
         case _TOKEN_SIGN_COMMA:
-            return _type_parse_common_suffix(s_formalname);
-            break;
-        /* SIMPLE_LONG_SUFFIX -> {+' '}double*... */
-        case _TOKEN_IDENTIFIER:
-            pc_pointersign = strchr(_gt_typeanalysis._s_tokentext, '*');
-            if (pc_pointersign == NULL) {
-                /* not pointer type */
-                return false;
-            }
-            if (strncmp(_gt_typeanalysis._s_tokentext, "double", pc_pointersign - _gt_typeanalysis._s_tokentext) != 0) {
-                /* not pointer of double type */
-                return false;
-            }
-            _TOKEN_MATCH_SPACE(s_formalname);
-            _TOKEN_MATCH_IDENTIFIER(s_formalname);
-            return true;
+            return _type_parse_complex_long_suffix(s_formalname);
             break;
         default:
             return false;
@@ -507,14 +557,15 @@ bool_t _type_parse_simple_builtin(char* s_formalname)
 {
     assert(s_formalname != NULL);
     /* 
-     * SIMPLE_BUILTIN -> char | short COMMON_SUFFIX | int | long SIMPLE_LONG_SUFFIX |
-     *                   float | double | char* | bool_t
+     * SIMPLE_BUILTIN -> char POINTER_SUFFIX | short COMMON_SUFFIX | int |
+     *                   long SIMPLE_LONG_SUFFIX | float | double | bool_t | _Bool
      */
     switch (_gt_typeanalysis._t_token) {
-        /* SIMPLE_BUILTIN -> char */
+        /* SIMPLE_BUILTIN -> char POINTER_SUFFIX */
         case _TOKEN_KEY_CHAR:
             _TOKEN_MATCH(_TOKEN_TEXT_CHAR, s_formalname);
-            return true;
+            _type_get_token();
+            return _type_parse_pointer_suffix(s_formalname);
             break;
         /* SIMPLE_BUILTIN -> short COMMON_SUFFIX */
         case _TOKEN_KEY_SHORT:
@@ -543,12 +594,12 @@ bool_t _type_parse_simple_builtin(char* s_formalname)
             _TOKEN_MATCH(_TOKEN_TEXT_DOUBLE, s_formalname);
             return true;
             break;
-        /* SIMPLE_BUILTIN -> char* */
-        case _TOKEN_KEY_CHAR_POINTER:
-            _TOKEN_MATCH(_TOKEN_TEXT_CHAR_POINTER, s_formalname);
+        /* SIMPLE_BUILTIN -> bool_t */
+        case _TOKEN_KEY_CSTL_BOOL:
+            _TOKEN_MATCH(_TOKEN_TEXT_CSTL_BOOL, s_formalname);
             return true;
             break;
-        /* SIMPLE_BUILTIN -> bool_t */
+        /* SIMPLE_BUILTIN -> _Bool */
         case _TOKEN_KEY_BOOL:
             _TOKEN_MATCH(_TOKEN_TEXT_BOOL, s_formalname);
             return true;
@@ -577,12 +628,10 @@ bool_t _type_parse_unsigned_builtin(char* s_formalname)
 
 bool_t _type_parse_complex_suffix(char* s_formalname)
 {
-    char* pc_pointersign = NULL;
-
     assert(s_formalname != NULL);
     /* 
      * COMPLEX_SUFFIX -> {+' '}char | {+' '}short COMMON_SUFFIX |
-     *                   {+' '}int | {+' '}long COMMON_SUFFIX | $
+     *                   {+' '}int | {+' '}long COMPLEX_LONG_SUFFIX | $
      */
     switch (_gt_typeanalysis._t_token) {
         /* COMPLEX_SUFFIX -> {+' '}char */
@@ -604,36 +653,18 @@ bool_t _type_parse_complex_suffix(char* s_formalname)
             _TOKEN_MATCH(_TOKEN_TEXT_INT, s_formalname);
             return true;
             break;
-        /* COMPLEX_SUFFIX -> {+' '}long COMMON_SUFFIX */
+        /* COMPLEX_SUFFIX -> {+' '}long COMPLEX_LONG_SUFFIX */
         case _TOKEN_KEY_LONG:
             _TOKEN_MATCH_SPACE(s_formalname);
             _TOKEN_MATCH(_TOKEN_TEXT_LONG, s_formalname);
             _type_get_token();
-            return _type_parse_common_suffix(s_formalname);
+            return _type_parse_complex_long_suffix(s_formalname);
             break;
         /* COMPLEX_SUFFIX -> $ */
         case _TOKEN_END_OF_INPUT:
         case _TOKEN_SIGN_RIGHT_BRACKET:
         case _TOKEN_SIGN_COMMA:
             _type_token_rollback();
-            return true;
-            break;
-        /* COMPLEX_SUFFIX -> {+' '}char|short|int|long*... */
-        case _TOKEN_IDENTIFIER:
-            pc_pointersign = strchr(_gt_typeanalysis._s_tokentext, '*');
-            if (pc_pointersign == NULL) {
-                /* not pointer type */
-                return false;
-            }
-            if (strncmp(_gt_typeanalysis._s_tokentext, "char", pc_pointersign - _gt_typeanalysis._s_tokentext) != 0 &&
-                strncmp(_gt_typeanalysis._s_tokentext, "int", pc_pointersign - _gt_typeanalysis._s_tokentext) != 0 &&
-                strncmp(_gt_typeanalysis._s_tokentext, "short", pc_pointersign - _gt_typeanalysis._s_tokentext) != 0 &&
-                strncmp(_gt_typeanalysis._s_tokentext, "long", pc_pointersign - _gt_typeanalysis._s_tokentext) != 0) {
-                /* not pointer of char or int or short or long type */
-                return false;
-            }
-            _TOKEN_MATCH_SPACE(s_formalname);
-            _TOKEN_MATCH_IDENTIFIER(s_formalname);
             return true;
             break;
         default:
@@ -720,7 +751,7 @@ bool_t _type_parse_sequence_name(char* s_formalname)
     /* 
      * SEQUENCE_NAME -> vector_t | list_t | slist_t | deque_t | stack_t | 
      *                  queue_t | priority_queue_t | set_t | multiset_t |
-     *                  hash_set_t | hash_multiset_t
+     *                  hash_set_t | hash_multiset_t | basic_string_t
      */
     switch (_gt_typeanalysis._t_token) {
         case _TOKEN_KEY_VECTOR:
@@ -765,6 +796,10 @@ bool_t _type_parse_sequence_name(char* s_formalname)
             break;
         case _TOKEN_KEY_HASH_MULTISET:
             _TOKEN_MATCH(_TOKEN_TEXT_HASH_MULTISET, s_formalname);
+            return true;
+            break;
+        case _TOKEN_KEY_BASIC_STRING:
+            _TOKEN_MATCH(_TOKEN_TEXT_BASIC_STRING, s_formalname);
             return true;
             break;
         default:
@@ -837,6 +872,14 @@ bool_t _type_parse_relation_name(char* s_formalname)
 bool_t _type_parse_iterator(char* s_formalname)
 {
     assert(s_formalname != NULL);
+    /*
+     * ITERATOR -> iterator_t | vector_iterator_t | list_iterator_t | slist_iterator_t |
+     *             deque_iterator_t | set_iterator_t | map_iterator_t | multiset_iterator_t |
+     *             multimap_iterator_t | hash_set_iterator_t | hash_map_iterator_t |
+     *             hash_multiset_iterator_t | hash_multimap_iterator_t |
+     *             string_iterator_t | input_iterator_t | output_iterator_t | forward_iterator_t |
+     *             bidirectional_iterator_t | random_access_iterator_t | basic_string_iterator_t
+     */
     switch (_gt_typeanalysis._t_token) {
         case _TOKEN_KEY_ITERATOR:
             _TOKEN_MATCH(_TOKEN_TEXT_ITERATOR, s_formalname);
@@ -914,6 +957,10 @@ bool_t _type_parse_iterator(char* s_formalname)
             _TOKEN_MATCH(_TOKEN_TEXT_RANDOM_ACCESS_ITERATOR, s_formalname);
             return true;
             break;
+        case _TOKEN_KEY_BASIC_STRING_ITERATOR:
+            _TOKEN_MATCH(_TOKEN_TEXT_BASIC_STRING_ITERATOR, s_formalname);
+            return true;
+            break;
         default:
             return false;
             break;
@@ -962,7 +1009,7 @@ bool_t _type_parse_relation(char* s_formalname)
 bool_t _type_parse_cstl_builtin(char* s_formalname)
 {
     assert(s_formalname != NULL);
-    /* CSTL_BUILTIN -> SEQUENCE | RELATION | string_t | ITERATOR */
+    /* CSTL_BUILTIN -> SEQUENCE | RELATION | string_t | range_t | ITERATOR */
     switch (_gt_typeanalysis._t_token) {
         /* CSTL_BUILTIN -> SEQUENCE */
         case _TOKEN_KEY_VECTOR:
@@ -976,6 +1023,7 @@ bool_t _type_parse_cstl_builtin(char* s_formalname)
         case _TOKEN_KEY_MULTISET:
         case _TOKEN_KEY_HASH_SET:
         case _TOKEN_KEY_HASH_MULTISET:
+        case _TOKEN_KEY_BASIC_STRING:
             return _type_parse_sequence(s_formalname);
             break;
         /* CSTL_BUILTIN -> RELATION */
@@ -991,6 +1039,12 @@ bool_t _type_parse_cstl_builtin(char* s_formalname)
             _TOKEN_MATCH(_TOKEN_TEXT_STRING, s_formalname);
             return true;
             break;
+        /* CSTL_BUILTIN -> range_t */
+        case _TOKEN_KEY_RANGE:
+            _TOKEN_MATCH(_TOKEN_TEXT_RANGE, s_formalname);
+            return true;
+            break;
+        /* CSTL_BUILTIN -> ITERATOR */
         case _TOKEN_KEY_ITERATOR:
         case _TOKEN_KEY_VECTOR_ITERATOR:
         case _TOKEN_KEY_LIST_ITERATOR:
@@ -1010,6 +1064,7 @@ bool_t _type_parse_cstl_builtin(char* s_formalname)
         case _TOKEN_KEY_FORWARD_ITERATOR:
         case _TOKEN_KEY_BIDIRECTIONAL_ITERATOR:
         case _TOKEN_KEY_RANDOM_ACCESS_ITERATOR:
+        case _TOKEN_KEY_BASIC_STRING_ITERATOR:
             return _type_parse_iterator(s_formalname);
             break;
         default:
@@ -1036,7 +1091,8 @@ bool_t _type_parse_type_descript(char* s_formalname)
         case _TOKEN_KEY_DOUBLE:
         case _TOKEN_KEY_SIGNED:
         case _TOKEN_KEY_UNSIGNED:
-        case _TOKEN_KEY_CHAR_POINTER:
+        case _TOKEN_KEY_VOID:
+        case _TOKEN_KEY_CSTL_BOOL:
         case _TOKEN_KEY_BOOL:
             return _type_parse_c_builtin(s_formalname);
             break;
@@ -1070,6 +1126,8 @@ bool_t _type_parse_type_descript(char* s_formalname)
         case _TOKEN_KEY_HASH_MULTIMAP:
         case _TOKEN_KEY_PAIR:
         case _TOKEN_KEY_STRING:
+        case _TOKEN_KEY_RANGE:
+        case _TOKEN_KEY_BASIC_STRING:
         case _TOKEN_KEY_ITERATOR:
         case _TOKEN_KEY_VECTOR_ITERATOR:
         case _TOKEN_KEY_LIST_ITERATOR:
@@ -1089,6 +1147,7 @@ bool_t _type_parse_type_descript(char* s_formalname)
         case _TOKEN_KEY_FORWARD_ITERATOR:
         case _TOKEN_KEY_BIDIRECTIONAL_ITERATOR:
         case _TOKEN_KEY_RANDOM_ACCESS_ITERATOR:
+        case _TOKEN_KEY_BASIC_STRING_ITERATOR:
             return _type_parse_cstl_builtin(s_formalname);
             break;
         default:

@@ -1,6 +1,6 @@
 /*
  *  The implementation of rb tree.
- *  Copyright (C)  2008 - 2012  Wangbo
+ *  Copyright (C)  2008 - 2014  Wangbo
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -25,12 +25,11 @@
 #include <cstl/cstl_alloc.h>
 #include <cstl/cstl_types.h>
 #include <cstl/citerator.h>
+#include <cstl/cstring.h>
 
 #include <cstl/cstl_rb_tree_iterator.h>
 #include <cstl/cstl_rb_tree_private.h>
 #include <cstl/cstl_rb_tree.h>
-
-#include <cstl/cstring.h>
 
 #include "cstl_rb_tree_aux.h"
 
@@ -67,7 +66,7 @@ _rb_tree_t* _create_rb_tree(const char* s_typename)
 /**
  * Initialize rb tree container.
  */
-void _rb_tree_init(_rb_tree_t* pt_rb_tree, binary_function_t t_compare)
+void _rb_tree_init(_rb_tree_t* pt_rb_tree, bfun_t t_compare)
 {
     assert(pt_rb_tree != NULL);
     assert(_rb_tree_is_created(pt_rb_tree));
@@ -97,6 +96,8 @@ void _rb_tree_destroy(_rb_tree_t* pt_rb_tree)
 void _rb_tree_init_copy(_rb_tree_t* pt_dest, const _rb_tree_t* cpt_src)
 {
     _rb_tree_iterator_t it_iter;
+    _rb_tree_iterator_t it_begin;
+    _rb_tree_iterator_t it_end;
 
     assert(pt_dest != NULL);
     assert(cpt_src != NULL);
@@ -105,8 +106,11 @@ void _rb_tree_init_copy(_rb_tree_t* pt_dest, const _rb_tree_t* cpt_src)
     assert(_rb_tree_same_type(pt_dest, cpt_src));
 
     _rb_tree_init(pt_dest, cpt_src->_t_compare);
-    for (it_iter = _rb_tree_begin(cpt_src);
-         !_rb_tree_iterator_equal(it_iter, _rb_tree_end(cpt_src));
+    it_begin = _rb_tree_begin(cpt_src);
+    it_end = _rb_tree_end(cpt_src);
+
+    for (it_iter = it_begin;
+         !_rb_tree_iterator_equal(it_iter, it_end);
          it_iter = _rb_tree_iterator_next(it_iter)) {
         _rb_tree_insert_equal(pt_dest, _rb_tree_iterator_get_pointer_ignore_cstr(it_iter));
     }
@@ -172,7 +176,7 @@ void _rb_tree_init_copy_unique_array(_rb_tree_t* pt_dest, const void* cpv_array,
  * Initialize rb tree container with specific range and compare function.
  */
 void _rb_tree_init_copy_equal_range_ex(
-    _rb_tree_t* pt_dest, iterator_t it_begin, iterator_t it_end, binary_function_t t_compare)
+    _rb_tree_t* pt_dest, iterator_t it_begin, iterator_t it_end, bfun_t t_compare)
 {
     assert(pt_dest != NULL);
     assert(_rb_tree_is_created(pt_dest));
@@ -188,7 +192,7 @@ void _rb_tree_init_copy_equal_range_ex(
  * Initialize rb tree container with specific range and compare function.
  */
 void _rb_tree_init_copy_unique_range_ex(
-    _rb_tree_t* pt_dest, iterator_t it_begin, iterator_t it_end, binary_function_t t_compare)
+    _rb_tree_t* pt_dest, iterator_t it_begin, iterator_t it_end, bfun_t t_compare)
 {
     assert(pt_dest != NULL);
     assert(_rb_tree_is_created(pt_dest));
@@ -204,7 +208,7 @@ void _rb_tree_init_copy_unique_range_ex(
  * Initialize rb tree container with specific array and compare function.
  */
 void _rb_tree_init_copy_equal_array_ex(
-    _rb_tree_t* pt_dest, const void* cpv_array, size_t t_count, binary_function_t t_compare)
+    _rb_tree_t* pt_dest, const void* cpv_array, size_t t_count, bfun_t t_compare)
 {
     assert(pt_dest != NULL);
     assert(_rb_tree_is_created(pt_dest));
@@ -218,7 +222,7 @@ void _rb_tree_init_copy_equal_array_ex(
  * Initialize rb tree container with specific array and compare function.
  */
 void _rb_tree_init_copy_unique_array_ex(
-    _rb_tree_t* pt_dest, const void* cpv_array, size_t t_count, binary_function_t t_compare)
+    _rb_tree_t* pt_dest, const void* cpv_array, size_t t_count, bfun_t t_compare)
 {
     assert(pt_dest != NULL);
     assert(_rb_tree_is_created(pt_dest));
@@ -241,11 +245,17 @@ void _rb_tree_assign(_rb_tree_t* pt_dest, const _rb_tree_t* cpt_src)
 
     if (!_rb_tree_equal(pt_dest, cpt_src)) {
         _rb_tree_iterator_t it_iter;
+        _rb_tree_iterator_t it_begin;
+        _rb_tree_iterator_t it_end;
+
         /* clear dest rb tree */
         _rb_tree_clear(pt_dest);
+        it_begin = _rb_tree_begin(cpt_src);
+        it_end = _rb_tree_end(cpt_src);
+
         /* insert all elements of src into dest */
-        for (it_iter = _rb_tree_begin(cpt_src);
-             !_rb_tree_iterator_equal(it_iter, _rb_tree_end(cpt_src));
+        for (it_iter = it_begin;
+             !_rb_tree_iterator_equal(it_iter, it_end);
              it_iter = _rb_tree_iterator_next(it_iter)) {
             _rb_tree_insert_equal(pt_dest, _rb_tree_iterator_get_pointer_ignore_cstr(it_iter));
         }
@@ -319,32 +329,32 @@ _rb_tree_iterator_t _rb_tree_end(const _rb_tree_t* cpt_rb_tree)
 
 _rb_tree_iterator_t _rb_tree_rend(const _rb_tree_t* cpt_rb_tree)
 {
-    _rb_tree_iterator_t t_newiterator = _create_rb_tree_iterator();
+    _rb_tree_iterator_t it_newiterator = _create_rb_tree_iterator();
 
     assert(cpt_rb_tree != NULL);
 
-    _RB_TREE_ITERATOR_TREE_POINTER(t_newiterator) = (void*)cpt_rb_tree;
-    _RB_TREE_ITERATOR_COREPOS(t_newiterator) = (_byte_t*)&cpt_rb_tree->_t_rbroot;
+    _RB_TREE_ITERATOR_TREE_POINTER(it_newiterator) = (void*)cpt_rb_tree;
+    _RB_TREE_ITERATOR_COREPOS(it_newiterator) = (_byte_t*)&cpt_rb_tree->_t_rbroot;
 
-    return t_newiterator;
+    return it_newiterator;
 }
 
 _rb_tree_iterator_t _rb_tree_rbegin(const _rb_tree_t* cpt_rb_tree)
 {
-    _rb_tree_iterator_t t_newiterator = _create_rb_tree_iterator();
+    _rb_tree_iterator_t it_newiterator = _create_rb_tree_iterator();
 
     assert(cpt_rb_tree != NULL);
 
-    _RB_TREE_ITERATOR_TREE_POINTER(t_newiterator) = (void*)cpt_rb_tree;
-    _RB_TREE_ITERATOR_COREPOS(t_newiterator) = (_byte_t*)cpt_rb_tree->_t_rbroot._pt_right;
+    _RB_TREE_ITERATOR_TREE_POINTER(it_newiterator) = (void*)cpt_rb_tree;
+    _RB_TREE_ITERATOR_COREPOS(it_newiterator) = (_byte_t*)cpt_rb_tree->_t_rbroot._pt_right;
 
-    return t_newiterator;
+    return it_newiterator;
 }
 
 /**
  * Return the compare function of key.
  */
-binary_function_t _rb_tree_key_comp(const _rb_tree_t* cpt_rb_tree)
+bfun_t _rb_tree_key_comp(const _rb_tree_t* cpt_rb_tree)
 {
     assert(cpt_rb_tree != NULL);
     assert(_rb_tree_is_inited(cpt_rb_tree));
@@ -393,8 +403,12 @@ void _rb_tree_clear(_rb_tree_t* pt_rb_tree)
  */
 bool_t _rb_tree_equal(const _rb_tree_t* cpt_first, const _rb_tree_t* cpt_second)
 {
-    _rb_tree_iterator_t t_first;
-    _rb_tree_iterator_t t_second;
+    _rb_tree_iterator_t it_first;
+    _rb_tree_iterator_t it_first_begin;
+    _rb_tree_iterator_t it_first_end;
+    _rb_tree_iterator_t it_second;
+    _rb_tree_iterator_t it_second_begin;
+    _rb_tree_iterator_t it_second_end;
     bool_t              b_less = false;
     bool_t              b_greater = false;
 
@@ -402,40 +416,39 @@ bool_t _rb_tree_equal(const _rb_tree_t* cpt_first, const _rb_tree_t* cpt_second)
     assert(cpt_second != NULL);
     assert(_rb_tree_is_inited(cpt_first));
     assert(_rb_tree_is_inited(cpt_second));
+    assert(_rb_tree_same_type_ex(cpt_first, cpt_second));
 
     if (cpt_first == cpt_second) {
         return true;
     }
     
-    /* test type */
-    if (!_rb_tree_same_type_ex(cpt_first, cpt_second)) {
-        return false;
-    }
     /* test rb tree size */
     if (_rb_tree_size(cpt_first) != _rb_tree_size(cpt_second)) {
         return false;
     }
+
+    it_first_begin = _rb_tree_begin(cpt_first);
+    it_first_end = _rb_tree_end(cpt_first);
+    it_second_begin = _rb_tree_begin(cpt_second);
+    it_second_end = _rb_tree_end(cpt_second);
+
     /* test each element */
-    for (t_first = _rb_tree_begin(cpt_first), 
-         t_second = _rb_tree_begin(cpt_second);
-         !_rb_tree_iterator_equal(t_first, _rb_tree_end(cpt_first)) &&
-         !_rb_tree_iterator_equal(t_second, _rb_tree_end(cpt_second));
-         t_first = _rb_tree_iterator_next(t_first),
-         t_second = _rb_tree_iterator_next(t_second)) {
+    for (it_first = it_first_begin, it_second = it_second_begin;
+         !_rb_tree_iterator_equal(it_first, it_first_end) && !_rb_tree_iterator_equal(it_second, it_second_end);
+         it_first = _rb_tree_iterator_next(it_first), it_second = _rb_tree_iterator_next(it_second)) {
         b_less = b_greater = _GET_RB_TREE_TYPE_SIZE(cpt_first);
         _GET_RB_TREE_TYPE_LESS_FUNCTION(cpt_first)(
-            ((_rbnode_t*)_RB_TREE_ITERATOR_COREPOS(t_first))->_pby_data,
-            ((_rbnode_t*)_RB_TREE_ITERATOR_COREPOS(t_second))->_pby_data, &b_less);
+            ((_rbnode_t*)_RB_TREE_ITERATOR_COREPOS(it_first))->_pby_data,
+            ((_rbnode_t*)_RB_TREE_ITERATOR_COREPOS(it_second))->_pby_data, &b_less);
         _GET_RB_TREE_TYPE_LESS_FUNCTION(cpt_first)(
-            ((_rbnode_t*)_RB_TREE_ITERATOR_COREPOS(t_second))->_pby_data,
-            ((_rbnode_t*)_RB_TREE_ITERATOR_COREPOS(t_first))->_pby_data, &b_greater);
+            ((_rbnode_t*)_RB_TREE_ITERATOR_COREPOS(it_second))->_pby_data,
+            ((_rbnode_t*)_RB_TREE_ITERATOR_COREPOS(it_first))->_pby_data, &b_greater);
         if (b_less || b_greater) {
             return false;
         }
     }
 
-    assert(_rb_tree_iterator_equal(t_first, _rb_tree_end(cpt_first)) &&
-           _rb_tree_iterator_equal(t_second, _rb_tree_end(cpt_second)));
+    assert(_rb_tree_iterator_equal(it_first, it_first_end) && _rb_tree_iterator_equal(it_second, it_second_end));
 
     return true;
 }
@@ -453,8 +466,12 @@ bool_t _rb_tree_not_equal(const _rb_tree_t* cpt_first, const _rb_tree_t* cpt_sec
  */
 bool_t _rb_tree_less(const _rb_tree_t* cpt_first, const _rb_tree_t* cpt_second)
 {
-    _rb_tree_iterator_t t_first;
-    _rb_tree_iterator_t t_second;
+    _rb_tree_iterator_t it_first;
+    _rb_tree_iterator_t it_first_begin;
+    _rb_tree_iterator_t it_first_end;
+    _rb_tree_iterator_t it_second;
+    _rb_tree_iterator_t it_second_begin;
+    _rb_tree_iterator_t it_second_end;
     bool_t              b_result = false;
 
     assert(cpt_first != NULL);
@@ -463,25 +480,27 @@ bool_t _rb_tree_less(const _rb_tree_t* cpt_first, const _rb_tree_t* cpt_second)
     assert(_rb_tree_is_inited(cpt_second));
     assert(_rb_tree_same_type_ex(cpt_first, cpt_second));
 
+    it_first_begin = _rb_tree_begin(cpt_first);
+    it_first_end = _rb_tree_end(cpt_first);
+    it_second_begin = _rb_tree_begin(cpt_second);
+    it_second_end = _rb_tree_end(cpt_second);
+
     /* test each element */
-    for (t_first = _rb_tree_begin(cpt_first), 
-         t_second = _rb_tree_begin(cpt_second);
-         !_rb_tree_iterator_equal(t_first, _rb_tree_end(cpt_first)) &&
-         !_rb_tree_iterator_equal(t_second, _rb_tree_end(cpt_second));
-         t_first = _rb_tree_iterator_next(t_first),
-         t_second = _rb_tree_iterator_next(t_second)) {
+    for (it_first = it_first_begin, it_second = it_second_begin;
+         !_rb_tree_iterator_equal(it_first, it_first_end) && !_rb_tree_iterator_equal(it_second, it_second_end);
+         it_first = _rb_tree_iterator_next(it_first), it_second = _rb_tree_iterator_next(it_second)) {
         b_result = _GET_RB_TREE_TYPE_SIZE(cpt_first);
         _GET_RB_TREE_TYPE_LESS_FUNCTION(cpt_first)(
-            ((_rbnode_t*)_RB_TREE_ITERATOR_COREPOS(t_first))->_pby_data,
-            ((_rbnode_t*)_RB_TREE_ITERATOR_COREPOS(t_second))->_pby_data, &b_result);
+            ((_rbnode_t*)_RB_TREE_ITERATOR_COREPOS(it_first))->_pby_data,
+            ((_rbnode_t*)_RB_TREE_ITERATOR_COREPOS(it_second))->_pby_data, &b_result);
         if (b_result) {
             return true;
         }
 
         b_result = _GET_RB_TREE_TYPE_SIZE(cpt_first);
         _GET_RB_TREE_TYPE_LESS_FUNCTION(cpt_first)(
-            ((_rbnode_t*)_RB_TREE_ITERATOR_COREPOS(t_second))->_pby_data,
-            ((_rbnode_t*)_RB_TREE_ITERATOR_COREPOS(t_first))->_pby_data, &b_result);
+            ((_rbnode_t*)_RB_TREE_ITERATOR_COREPOS(it_second))->_pby_data,
+            ((_rbnode_t*)_RB_TREE_ITERATOR_COREPOS(it_first))->_pby_data, &b_result);
         if (b_result) {
             return false;
         }
@@ -884,7 +903,7 @@ void _rb_tree_erase_pos(_rb_tree_t* pt_rb_tree, _rb_tree_iterator_t it_pos)
             pt_parent->_pt_parent = pt_cur->_pt_left;
             pt_parent->_pt_parent->_pt_parent = pt_parent;
 
-            pt_parent->_pt_parent->_t_color = BLACK;
+            pt_parent->_pt_parent->_t_color = _COLOR_BLACK;
         } else if (pt_cur->_pt_left == NULL && pt_cur->_pt_right != NULL) {
             /*
              *    p         p
@@ -896,7 +915,7 @@ void _rb_tree_erase_pos(_rb_tree_t* pt_rb_tree, _rb_tree_iterator_t it_pos)
             pt_parent->_pt_parent = pt_cur->_pt_right;
             pt_parent->_pt_parent->_pt_parent = pt_parent;
 
-            pt_parent->_pt_parent->_t_color = BLACK;
+            pt_parent->_pt_parent->_t_color = _COLOR_BLACK;
         } else {
             /* 
              * here the real deleted node is pt_curtmp, so the 
@@ -921,7 +940,7 @@ void _rb_tree_erase_pos(_rb_tree_t* pt_rb_tree, _rb_tree_iterator_t it_pos)
                 pt_curtmp->_t_color = pt_cur->_t_color;
                 pt_cur->_t_color = t_colortmp;
 
-                if (_rb_tree_get_color(pt_cur) == BLACK) {
+                if (_rb_tree_get_color(pt_cur) == _COLOR_BLACK) {
                     _rb_tree_fixup_deletion(pt_rb_tree, pt_curtmp->_pt_right, pt_curtmp);
                 }
             } else {
@@ -951,7 +970,7 @@ void _rb_tree_erase_pos(_rb_tree_t* pt_rb_tree, _rb_tree_iterator_t it_pos)
                 pt_curtmp->_t_color = pt_cur->_t_color;
                 pt_cur->_t_color = t_colortmp;
 
-                if (_rb_tree_get_color(pt_cur) == BLACK) {
+                if (_rb_tree_get_color(pt_cur) == _COLOR_BLACK) {
                     _rb_tree_fixup_deletion(pt_rb_tree, pt_parenttmp->_pt_left, pt_parenttmp);
                 }
             }
@@ -965,7 +984,7 @@ void _rb_tree_erase_pos(_rb_tree_t* pt_rb_tree, _rb_tree_iterator_t it_pos)
              */
             pt_parent->_pt_left = NULL;
 
-            if (_rb_tree_get_color(pt_cur) == BLACK) {
+            if (_rb_tree_get_color(pt_cur) == _COLOR_BLACK) {
                 _rb_tree_fixup_deletion(pt_rb_tree, pt_parent->_pt_left, pt_parent);
             }
         } else if (pt_cur->_pt_left != NULL && pt_cur->_pt_right == NULL) {
@@ -979,7 +998,7 @@ void _rb_tree_erase_pos(_rb_tree_t* pt_rb_tree, _rb_tree_iterator_t it_pos)
             pt_parent->_pt_left = pt_cur->_pt_left;
             pt_parent->_pt_left->_pt_parent = pt_parent;
 
-            if (_rb_tree_get_color(pt_cur) == BLACK) {
+            if (_rb_tree_get_color(pt_cur) == _COLOR_BLACK) {
                 _rb_tree_fixup_deletion(pt_rb_tree, pt_parent->_pt_left, pt_parent);
             }
         } else if (pt_cur->_pt_left == NULL && pt_cur->_pt_right != NULL) {
@@ -993,7 +1012,7 @@ void _rb_tree_erase_pos(_rb_tree_t* pt_rb_tree, _rb_tree_iterator_t it_pos)
             pt_parent->_pt_left = pt_cur->_pt_right;
             pt_parent->_pt_left->_pt_parent = pt_parent;
 
-            if (_rb_tree_get_color(pt_cur) == BLACK) {
+            if (_rb_tree_get_color(pt_cur) == _COLOR_BLACK) {
                 _rb_tree_fixup_deletion(pt_rb_tree, pt_parent->_pt_left, pt_parent);
             }
         } else {
@@ -1020,7 +1039,7 @@ void _rb_tree_erase_pos(_rb_tree_t* pt_rb_tree, _rb_tree_iterator_t it_pos)
                 pt_curtmp->_t_color = pt_cur->_t_color;
                 pt_cur->_t_color = t_colortmp;
 
-                if (_rb_tree_get_color(pt_cur) == BLACK) {
+                if (_rb_tree_get_color(pt_cur) == _COLOR_BLACK) {
                     _rb_tree_fixup_deletion(pt_rb_tree, pt_curtmp->_pt_right, pt_curtmp);
                 }
             } else {
@@ -1050,7 +1069,7 @@ void _rb_tree_erase_pos(_rb_tree_t* pt_rb_tree, _rb_tree_iterator_t it_pos)
                 pt_curtmp->_t_color = pt_cur->_t_color;
                 pt_cur->_t_color = t_colortmp;
 
-                if (_rb_tree_get_color(pt_cur) == BLACK) {
+                if (_rb_tree_get_color(pt_cur) == _COLOR_BLACK) {
                     _rb_tree_fixup_deletion(pt_rb_tree, pt_parenttmp->_pt_left, pt_parenttmp);
                 }
             }
@@ -1064,7 +1083,7 @@ void _rb_tree_erase_pos(_rb_tree_t* pt_rb_tree, _rb_tree_iterator_t it_pos)
              */
             pt_parent->_pt_right = NULL;
 
-            if (_rb_tree_get_color(pt_cur) == BLACK) {
+            if (_rb_tree_get_color(pt_cur) == _COLOR_BLACK) {
                 _rb_tree_fixup_deletion(pt_rb_tree, pt_parent->_pt_right, pt_parent);
             }
         } else if (pt_cur->_pt_left != NULL && pt_cur->_pt_right == NULL) {
@@ -1078,7 +1097,7 @@ void _rb_tree_erase_pos(_rb_tree_t* pt_rb_tree, _rb_tree_iterator_t it_pos)
             pt_parent->_pt_right = pt_cur->_pt_left;
             pt_parent->_pt_right->_pt_parent = pt_parent;
  
-            if (_rb_tree_get_color(pt_cur) == BLACK) {
+            if (_rb_tree_get_color(pt_cur) == _COLOR_BLACK) {
                 _rb_tree_fixup_deletion(pt_rb_tree, pt_parent->_pt_right, pt_parent);
             }
         } else if (pt_cur->_pt_left == NULL && pt_cur->_pt_right != NULL) {
@@ -1092,7 +1111,7 @@ void _rb_tree_erase_pos(_rb_tree_t* pt_rb_tree, _rb_tree_iterator_t it_pos)
             pt_parent->_pt_right = pt_cur->_pt_right;
             pt_parent->_pt_right->_pt_parent = pt_parent;
 
-            if (_rb_tree_get_color(pt_cur) == BLACK) {
+            if (_rb_tree_get_color(pt_cur) == _COLOR_BLACK) {
                 _rb_tree_fixup_deletion(pt_rb_tree, pt_parent->_pt_right, pt_parent);
             }
         } else {
@@ -1119,7 +1138,7 @@ void _rb_tree_erase_pos(_rb_tree_t* pt_rb_tree, _rb_tree_iterator_t it_pos)
                 pt_curtmp->_t_color = pt_cur->_t_color;
                 pt_cur->_t_color = t_colortmp;
 
-                if (_rb_tree_get_color(pt_cur) == BLACK) {
+                if (_rb_tree_get_color(pt_cur) == _COLOR_BLACK) {
                     _rb_tree_fixup_deletion(pt_rb_tree, pt_curtmp->_pt_right, pt_curtmp);
                 }
             } else {
@@ -1149,7 +1168,7 @@ void _rb_tree_erase_pos(_rb_tree_t* pt_rb_tree, _rb_tree_iterator_t it_pos)
                 pt_curtmp->_t_color = pt_cur->_t_color;
                 pt_cur->_t_color = t_colortmp;
 
-                if (_rb_tree_get_color(pt_cur) == BLACK) {
+                if (_rb_tree_get_color(pt_cur) == _COLOR_BLACK) {
                     _rb_tree_fixup_deletion(pt_rb_tree, pt_parenttmp->_pt_left, pt_parenttmp);
                 }
             }

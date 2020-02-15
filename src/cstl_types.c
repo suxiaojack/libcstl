@@ -1,6 +1,6 @@
 /*
  *  The implementation of cstl types.
- *  Copyright (C)  2008 - 2012  Wangbo
+ *  Copyright (C)  2008 - 2014  Wangbo
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -96,10 +96,10 @@ void _type_debug(void)
 
 bool_t _type_register(
     size_t t_typesize, const char* s_typename,
-    unary_function_t t_typeinit, binary_function_t t_typecopy,
-    binary_function_t t_typeless, unary_function_t t_typedestroy)
+    ufun_t t_typeinit, bfun_t t_typecopy,
+    bfun_t t_typeless, ufun_t t_typedestroy)
 {
-    char         s_formalname[_TYPE_NAME_SIZE + 1] = {'\0'};
+    char         s_formalname[_TYPE_NAME_SIZE + 1];
     _typestyle_t t_style = _TYPE_INVALID;
 
     if (!_gt_typeregister._t_isinit) {
@@ -137,69 +137,14 @@ bool_t _type_register(
     }
 }
 
-/*
- This code will be come valid in future.
-void _type_unregister(size_t t_typesize, const char* s_typename)
-{
-    _type_t*     pt_type = NULL;
-    size_t       t_avoidwarning = 0;
-    char         s_formalname[_TYPE_NAME_SIZE + 1];
-
-    t_avoidwarning = t_typesize;
-    if (strlen(s_typename) > _TYPE_NAME_SIZE) {
-        return;
-    }
-
-    if (_type_get_style(s_typename, s_formalname) != _TYPE_USER_DEFINE) {
-        return;
-    }
-    pt_type = _type_is_registered(s_formalname);
-
-    if (pt_type != NULL) {
-        _typenode_t* pt_curnode = NULL;
-        _typenode_t* pt_prevnode = NULL;
-        size_t       i = 0;
-
-        for (i = 0; i < _TYPE_REGISTER_BUCKET_COUNT; ++i) {
-            pt_curnode = pt_prevnode = _gt_typeregister._apt_bucket[i];
-            while (pt_curnode != NULL) {
-                if (pt_curnode->_pt_type == pt_type) {
-                    if (pt_curnode == _gt_typeregister._apt_bucket[i]) {
-                        _gt_typeregister._apt_bucket[i] = pt_curnode->_pt_next;
-                        _alloc_deallocate(&_gt_typeregister._t_allocator, pt_curnode, sizeof(_typenode_t), 1);
-                        pt_curnode = pt_prevnode = _gt_typeregister._apt_bucket[i];
-                    } else {
-                        assert(pt_prevnode->_pt_next == pt_curnode);
-                        pt_prevnode->_pt_next = pt_curnode->_pt_next;
-                        _alloc_deallocate(&_gt_typeregister._t_allocator, pt_curnode, sizeof(_typenode_t), 1);
-                        pt_curnode = pt_prevnode->_pt_next;
-                    }
-                } else {
-                    if (pt_curnode == _gt_typeregister._apt_bucket[i]) {
-                        assert(pt_curnode == pt_prevnode);
-                        pt_curnode = pt_curnode->_pt_next;
-                    } else {
-                        assert(pt_curnode == pt_prevnode->_pt_next);
-                        pt_prevnode = pt_curnode;
-                        pt_curnode = pt_curnode->_pt_next;
-                    }
-                }
-            }
-        }
-
-        _alloc_deallocate(&_gt_typeregister._t_allocator, pt_type, sizeof(_type_t), 1);
-    }
-}
-*/
-
 bool_t _type_duplicate(
     size_t t_typesize1, const char* s_typename1,
     size_t t_typesize2, const char* s_typename2)
 {
     _type_t* pt_registered1 = NULL;
     _type_t* pt_registered2 = false;
-    char     s_formalname1[_TYPE_NAME_SIZE + 1] = {'\0'};
-    char     s_formalname2[_TYPE_NAME_SIZE + 1] = {'\0'};
+    char     s_formalname1[_TYPE_NAME_SIZE + 1];
+    char     s_formalname2[_TYPE_NAME_SIZE + 1];
 
     assert(s_typename1 != NULL);
     assert(s_typename2 != NULL);
@@ -261,8 +206,8 @@ bool_t _type_duplicate(
 void _type_get_type_pair(_typeinfo_t* pt_typeinfofirst, _typeinfo_t* pt_typeinfosecond, const char* s_typename)
 {
     /* this function get type information for pair_t and relation container */
-    char  s_firsttypename[_TYPE_NAME_SIZE + 1] = {'\0'};
-    char  s_secondtypename[_TYPE_NAME_SIZE + 1] = {'\0'};
+    char  s_firsttypename[_TYPE_NAME_SIZE + 1];
+    char  s_secondtypename[_TYPE_NAME_SIZE + 1];
     char* pc_commapos = NULL;
     char* pc_newstart = NULL;
 
@@ -278,9 +223,10 @@ void _type_get_type_pair(_typeinfo_t* pt_typeinfofirst, _typeinfo_t* pt_typeinfo
     /* the type name is separated in two section by comma */
     pc_newstart = (char*)s_typename;
     while ((pc_commapos = strchr(pc_newstart, _CSTL_COMMA)) != NULL) {
-        memset(s_firsttypename, '\0', _TYPE_NAME_SIZE + 1);
-        memset(s_secondtypename, '\0', _TYPE_NAME_SIZE + 1);
+        s_firsttypename[0] = s_firsttypename[_TYPE_NAME_SIZE] = '\0';
+        s_secondtypename[0] = s_secondtypename[_TYPE_NAME_SIZE] = '\0';
         strncpy(s_firsttypename, s_typename, pc_commapos - s_typename);
+        s_firsttypename[pc_commapos - s_typename] = '\0';
         strncpy(s_secondtypename, pc_commapos + 1, _TYPE_NAME_SIZE);
 
         _type_get_type(pt_typeinfofirst, s_firsttypename);
@@ -299,9 +245,95 @@ void _type_get_type_pair(_typeinfo_t* pt_typeinfofirst, _typeinfo_t* pt_typeinfo
     }
 }
 
+static inline bool_t _type_cstl_builtin_special(const char* s_typename)
+{
+    /*
+     * Judging the special cstl-builtin type.
+     */
+    size_t t_length = 0;
+    bool_t b_result = false;
+
+    assert(s_typename != NULL);
+
+    t_length = strlen(s_typename);
+    switch (t_length) {
+        case 7:
+            if (strncmp(s_typename, _RANGE_TYPE, _TYPE_NAME_SIZE) == 0) {
+                b_result = true;
+            }
+            break;
+        case 8:
+            if (strncmp(s_typename, _STRING_TYPE, _TYPE_NAME_SIZE) == 0) {
+                b_result = true;
+            }
+            break;
+        case 10:
+            if (strncmp(s_typename, _ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0) {
+                b_result = true;
+            }
+            break;
+        case 14:
+            if (strncmp(s_typename, _SET_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
+                strncmp(s_typename, _MAP_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0) {
+                b_result = true;
+            }
+            break;
+        case 15:
+            if (strncmp(s_typename, _LIST_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0) {
+                b_result = true;
+            }
+            break;
+        case 16:
+            if (strncmp(s_typename, _INPUT_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
+                strncmp(s_typename, _SLIST_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
+                strncmp(s_typename, _DEQUE_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0) {
+                b_result = true;
+            }
+            break;
+        case 17:
+            if (strncmp(s_typename, _STRING_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
+                strncmp(s_typename, _OUTPUT_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
+                strncmp(s_typename, _VECTOR_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0) {
+                b_result = true;
+            }
+            break;
+        case 18:
+            if (strncmp(s_typename, _FORWARD_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0) {
+                b_result = true;
+            }
+            break;
+        case 19:
+            if (strncmp(s_typename, _MULTISET_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
+                strncmp(s_typename, _MULTIMAP_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
+                strncmp(s_typename, _HASH_SET_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
+                strncmp(s_typename, _HASH_MAP_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0) {
+                b_result = true;
+            }
+            break;
+        case 23:
+            if (strncmp(s_typename, _BASIC_STRING_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0) {
+                b_result = true;
+            }
+            break;
+        case 24:
+            if (strncmp(s_typename, _HASH_MULTISET_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
+                strncmp(s_typename, _HASH_MULTIMAP_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
+                strncmp(s_typename, _BIDIRECTIONAL_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
+                strncmp(s_typename, _RANDOM_ACCESS_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0) {
+                b_result = true;
+            }
+            break;
+        default:
+            b_result = false;
+            break;
+    }
+
+    return b_result;
+}
+
 void _type_get_type(_typeinfo_t* pt_typeinfo, const char* s_typename)
 {
-    char s_registeredname[_TYPE_NAME_SIZE + 1] = {'\0'};
+    char s_registeredname[_TYPE_NAME_SIZE + 1];
 
     assert(pt_typeinfo != NULL);
     assert(s_typename != NULL);
@@ -310,6 +342,7 @@ void _type_get_type(_typeinfo_t* pt_typeinfo, const char* s_typename)
         _type_init();
     }
 
+    s_registeredname[0] = s_registeredname[_TYPE_NAME_SIZE] = '\0';
     pt_typeinfo->_t_style = _type_get_style(s_typename, pt_typeinfo->_s_typename);
     if (pt_typeinfo->_t_style == _TYPE_INVALID) {
         pt_typeinfo->_pt_type = NULL;
@@ -318,32 +351,17 @@ void _type_get_type(_typeinfo_t* pt_typeinfo, const char* s_typename)
                pt_typeinfo->_t_style == _TYPE_USER_DEFINE) {
         strncpy(s_registeredname, pt_typeinfo->_s_typename, _TYPE_NAME_SIZE);
     } else {
-        /* the string_t and iterator types are special codition */
-        if (strncmp(pt_typeinfo->_s_typename, _STRING_TYPE, _TYPE_NAME_SIZE) == 0 ||
-            strncmp(pt_typeinfo->_s_typename, _ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-            strncmp(pt_typeinfo->_s_typename, _INPUT_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-            strncmp(pt_typeinfo->_s_typename, _OUTPUT_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-            strncmp(pt_typeinfo->_s_typename, _FORWARD_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-            strncmp(pt_typeinfo->_s_typename, _BIDIRECTIONAL_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-            strncmp(pt_typeinfo->_s_typename, _RANDOM_ACCESS_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-            strncmp(pt_typeinfo->_s_typename, _VECTOR_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-            strncmp(pt_typeinfo->_s_typename, _LIST_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-            strncmp(pt_typeinfo->_s_typename, _SLIST_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-            strncmp(pt_typeinfo->_s_typename, _DEQUE_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-            strncmp(pt_typeinfo->_s_typename, _SET_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-            strncmp(pt_typeinfo->_s_typename, _MAP_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-            strncmp(pt_typeinfo->_s_typename, _MULTISET_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-            strncmp(pt_typeinfo->_s_typename, _MULTIMAP_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-            strncmp(pt_typeinfo->_s_typename, _HASH_SET_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-            strncmp(pt_typeinfo->_s_typename, _HASH_MAP_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-            strncmp(pt_typeinfo->_s_typename, _HASH_MULTISET_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-            strncmp(pt_typeinfo->_s_typename, _HASH_MULTIMAP_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-            strncmp(pt_typeinfo->_s_typename, _STRING_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0) {
+        /* the string_t , range_t and iterator types are special codition */
+        if (_type_cstl_builtin_special(pt_typeinfo->_s_typename)) {
             strncpy(s_registeredname, pt_typeinfo->_s_typename, _TYPE_NAME_SIZE);
         } else {
+            size_t t_length = 0;
             char* pc_leftbracket = strchr(pt_typeinfo->_s_typename, _CSTL_LEFT_BRACKET);
             assert(pc_leftbracket != NULL);
-            strncpy(s_registeredname, pt_typeinfo->_s_typename, pc_leftbracket-pt_typeinfo->_s_typename);
+            t_length = pc_leftbracket - pt_typeinfo->_s_typename;
+            assert(t_length <= _TYPE_NAME_SIZE);
+            strncpy(s_registeredname, pt_typeinfo->_s_typename, t_length);
+            s_registeredname[t_length] = '\0';
         }
     }
 
@@ -360,10 +378,10 @@ void _type_get_type(_typeinfo_t* pt_typeinfo, const char* s_typename)
 bool_t _type_is_same(const char* s_typename1, const char* s_typename2)
 {
     /* s_typename1 and s_typename2 is formal name */
-    char  s_elemname1[_TYPE_NAME_SIZE + 1] = {'\0'};
-    char  s_prefix1[_TYPE_NAME_SIZE + 1] = {'\0'};
-    char  s_elemname2[_TYPE_NAME_SIZE + 1] = {'\0'};
-    char  s_prefix2[_TYPE_NAME_SIZE + 1] = {'\0'};
+    char  s_elemname1[_TYPE_NAME_SIZE + 1];
+    char  s_prefix1[_TYPE_NAME_SIZE + 1];
+    char  s_elemname2[_TYPE_NAME_SIZE + 1];
+    char  s_prefix2[_TYPE_NAME_SIZE + 1];
     char* pc_index1 = NULL;
     char* pc_leftbracket1 = NULL;
     char* pc_rightbracket1 = NULL;
@@ -376,6 +394,8 @@ bool_t _type_is_same(const char* s_typename1, const char* s_typename2)
     assert(s_typename1 != NULL);
     assert(s_typename2 != NULL);
 
+    s_elemname1[0] = s_elemname1[_TYPE_NAME_SIZE] = '\0';
+    s_elemname2[0] = s_elemname2[_TYPE_NAME_SIZE] = '\0';
     strncpy(s_elemname1, s_typename1, _TYPE_NAME_SIZE);
     strncpy(s_elemname2, s_typename2, _TYPE_NAME_SIZE);
 
@@ -442,21 +462,23 @@ bool_t _type_is_same(const char* s_typename1, const char* s_typename2)
                     pc_rightbracket2;
 
         if (pc_index1 != NULL && pc_index2 != NULL) {
-            memset(s_prefix1, '\0', _TYPE_NAME_SIZE + 1);
-            memset(s_prefix2, '\0', _TYPE_NAME_SIZE + 1);
+            s_prefix1[0] = s_prefix1[_TYPE_NAME_SIZE] = '\0';
+            s_prefix2[0] = s_prefix2[_TYPE_NAME_SIZE] = '\0';
             strncpy(s_prefix1, s_elemname1, pc_index1 - s_elemname1);
+            s_prefix1[pc_index1 - s_elemname1] = '\0';
             strncpy(s_prefix2, s_elemname2, pc_index2 - s_elemname2);
+            s_prefix2[pc_index2 - s_elemname2] = '\0';
 
             if (_type_is_registered(s_prefix1) != _type_is_registered(s_prefix2)) {
                 return false;
             }
 
-            memset(s_prefix1, '\0', _TYPE_NAME_SIZE + 1);
-            memset(s_prefix2, '\0', _TYPE_NAME_SIZE + 1);
+            s_prefix1[0] = s_prefix1[_TYPE_NAME_SIZE] = '\0';
+            s_prefix2[0] = s_prefix2[_TYPE_NAME_SIZE] = '\0';
             strncpy(s_prefix1, pc_index1 + 1, _TYPE_NAME_SIZE);
             strncpy(s_prefix2, pc_index2 + 1, _TYPE_NAME_SIZE);
-            memset(s_elemname1, '\0', _TYPE_NAME_SIZE + 1);
-            memset(s_elemname2, '\0', _TYPE_NAME_SIZE + 1);
+            s_elemname1[0] = s_elemname1[_TYPE_NAME_SIZE] = '\0';
+            s_elemname2[0] = s_elemname2[_TYPE_NAME_SIZE] = '\0';
             strncpy(s_elemname1, s_prefix1, _TYPE_NAME_SIZE);
             strncpy(s_elemname2, s_prefix2, _TYPE_NAME_SIZE);
         } else {
@@ -498,31 +520,12 @@ void _type_get_elem_typename(const char* s_typename, char* s_elemtypename)
     memset(s_elemtypename, '\0', _TYPE_NAME_SIZE + 1);
 
     /* the string_t and iterator types are special condition */
-    if (strncmp(s_typename, _STRING_TYPE, _TYPE_NAME_SIZE) == 0 ||
-        strncmp(s_typename, _ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-        strncmp(s_typename, _INPUT_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-        strncmp(s_typename, _OUTPUT_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-        strncmp(s_typename, _FORWARD_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-        strncmp(s_typename, _BIDIRECTIONAL_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-        strncmp(s_typename, _RANDOM_ACCESS_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-        strncmp(s_typename, _VECTOR_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-        strncmp(s_typename, _LIST_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-        strncmp(s_typename, _SLIST_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-        strncmp(s_typename, _DEQUE_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-        strncmp(s_typename, _SET_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-        strncmp(s_typename, _MAP_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-        strncmp(s_typename, _MULTISET_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-        strncmp(s_typename, _MULTIMAP_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-        strncmp(s_typename, _HASH_SET_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-        strncmp(s_typename, _HASH_MAP_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-        strncmp(s_typename, _HASH_MULTISET_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-        strncmp(s_typename, _HASH_MULTIMAP_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0 ||
-        strncmp(s_typename, _STRING_ITERATOR_TYPE, _TYPE_NAME_SIZE) == 0) {
+    if (_type_cstl_builtin_special(s_typename)) {
         strncpy(s_elemtypename, s_typename, _TYPE_NAME_SIZE);
     } else {
         /* e.g. "vector_t<map_t<int,long>>" */
-        pc_left = strchr(s_typename, '<');
-        pc_right = strrchr(s_typename, '>');
+        pc_left = strchr(s_typename, _CSTL_LEFT_BRACKET);
+        pc_right = strrchr(s_typename, _CSTL_RIGHT_BRACKET);
         assert(pc_left != NULL && pc_right != NULL && pc_left < pc_right &&
                pc_right == s_typename + strlen(s_typename) - 1);
 
@@ -586,15 +589,41 @@ void _type_get_varg_value(_typeinfo_t* pt_typeinfo, va_list val_elemlist, void* 
             /* long double */
             assert(pt_typeinfo->_pt_type->_t_typesize == sizeof(long double));
             *(long double*)pv_output = va_arg(val_elemlist, double);
-        } else if (strncmp(pt_typeinfo->_pt_type->_s_typename, _BOOL_TYPE, _TYPE_NAME_SIZE) == 0) {
+        } else if (strncmp(pt_typeinfo->_pt_type->_s_typename, _CSTL_BOOL_TYPE, _TYPE_NAME_SIZE) == 0) {
             /* bool_t */
             assert(pt_typeinfo->_pt_type->_t_typesize == sizeof(bool_t));
             *(bool_t*)pv_output = va_arg(val_elemlist, bool_t);
+        } else if (strncmp(pt_typeinfo->_pt_type->_s_typename, _POINTER_TYPE, _TYPE_NAME_SIZE) == 0) {
+            /* void* */
+            assert(pt_typeinfo->_pt_type->_t_typesize == sizeof(void*));
+            *(void**)pv_output = va_arg(val_elemlist, void*);
         } else if (strncmp(pt_typeinfo->_pt_type->_s_typename, _C_STRING_TYPE, _TYPE_NAME_SIZE) == 0) {
             /* char* */
             char* s_str = va_arg(val_elemlist, char*);
             assert(pt_typeinfo->_pt_type->_t_typesize == sizeof(string_t));
-            string_assign_cstr((string_t*)pv_output, s_str);
+
+            if (s_str != NULL) {
+                string_assign_cstr((string_t*)pv_output, s_str);
+            } else {
+                bool_t b_result = pt_typeinfo->_pt_type->_t_typesize;
+                (*pt_typeinfo->_pt_type->_t_typedestroy)(pv_output, &b_result);
+                assert(b_result);
+                memset(pv_output, 0x00, pt_typeinfo->_pt_type->_t_typesize);
+            }
+#ifndef _MSC_VER
+        } else if (strncmp(pt_typeinfo->_pt_type->_s_typename, _BOOL_TYPE, _TYPE_NAME_SIZE) == 0) {
+            /* _Bool */
+            assert(pt_typeinfo->_pt_type->_t_typesize == sizeof(_Bool));
+            *(_Bool*)pv_output = va_arg(val_elemlist, int);
+        } else if (strncmp(pt_typeinfo->_pt_type->_s_typename, _LONG_LONG_TYPE, _TYPE_NAME_SIZE) == 0) {
+            /* long long */
+            assert(pt_typeinfo->_pt_type->_t_typesize == sizeof(long long));
+            *(long long*)pv_output = va_arg(val_elemlist, long long);
+        } else if (strncmp(pt_typeinfo->_pt_type->_s_typename, _UNSIGNED_LONG_LONG_TYPE, _TYPE_NAME_SIZE) == 0) {
+            /* unsigned long long */
+            assert(pt_typeinfo->_pt_type->_t_typesize == sizeof(unsigned long long));
+            *(unsigned long long*)pv_output = va_arg(val_elemlist, unsigned long long);
+#endif
         } else {
             /* invalid c builtin style */
             assert(false);
@@ -606,7 +635,14 @@ void _type_get_varg_value(_typeinfo_t* pt_typeinfo, va_list val_elemlist, void* 
          */
         bool_t b_result = pt_typeinfo->_pt_type->_t_typesize;
         void*  pv_elem = va_arg(val_elemlist, void*);
-        (*pt_typeinfo->_pt_type->_t_typecopy)(pv_output, pv_elem, &b_result);
+
+        /* set terminator to pv_output when input pointer is NULL. */
+        if (pv_elem != NULL) {
+            (*pt_typeinfo->_pt_type->_t_typecopy)(pv_output, pv_elem, &b_result);
+        } else {
+            (*pt_typeinfo->_pt_type->_t_typedestroy)(pv_output, &b_result);
+            memset(pv_output, 0x00, pt_typeinfo->_pt_type->_t_typesize);
+        }
         assert(b_result);
     } else {
         /* invalid type style */

@@ -1,6 +1,6 @@
 /*
  *  The interface of basic_string.
- *  Copyright (C)  2008 - 2012  Wangbo
+ *  Copyright (C)  2008 - 2014  Wangbo
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -151,7 +151,8 @@ extern "C" {
  *          if t_resize less than current basic_string size, then erase elmement from the end. if t_resize greater than
  *          current basic_string size, then append elements to the end, and the element is specificed element.
  */
-#define basic_string_resize(pt_basic_string, t_resize, elem) _basic_string_resize((pt_basic_string), (t_resize), (elem))
+#define basic_string_resize_elem(pt_basic_string, t_resize, elem)\
+    _basic_string_resize_elem((pt_basic_string), (t_resize), (elem))
 
 /**
  * Assign basic_string with specificed element.
@@ -284,11 +285,11 @@ extern void basic_string_init_cstr(basic_string_t* pt_basic_string, const void* 
  * Initialize basic_string container specific sub value string.
  * @param pt_basic_string    basic_string container.
  * @param cpv_value_string   value string.
- * @param t_len              length of sub value string.
+ * @param t_len           length of sub value string.
  * @return void.
  * @remarks if pt_basic_string == NULL or cpv_value_string == NULL, then the behavior is undefined. pt_basic_string muse be
- *          created by create_basic_string(), otherwise the behavior is undefined. if t_len is NPOS or greater then the
- *          length of value string, then use total value string to initialize basic_string.
+ *          created by create_basic_string(), otherwise the behavior is undefined. if t_len greater then the max_size then
+ *          the behavior is undefined.
  */
 extern void basic_string_init_subcstr(basic_string_t* pt_basic_string, const void* cpv_value_string, size_t t_len);
 
@@ -1330,19 +1331,19 @@ extern void basic_string_range_replace(
  * @param it_begin            the position of first element in the range.
  * @param it_end              the position of first element beyond the range.
  * @param cpt_replace         replace basic_string container.
- * @param t_position          copy position.
- * @param t_length            copy length.
+ * @param t_pos               copy position.
+ * @param t_len               copy length.
  * @return void.
  * @remarks if pt_basic_string == NULL or cpt_replace == NULL, then the behavior is undefined. pt_basic_string and cpt_replace
  *          must be initialized, otherwise the behavior is undefined. the element type of two basic_strings must be same,
  *          otherwise the behavior is undefined. [it_begin, it_end) must be valid range for pt_basic_string, otherwise the
  *          behavior is undefined. t_position is valid position for cpt_replace, otherwise the behavior is undefined. if
- *          t_length == NPOS or t_position + t_length >= basic_string_size(cpt_replace), the user all remain cpt_replace that
+ *          t_len == NPOS or t_position + t_len >= basic_string_size(cpt_replace), the user all remain cpt_replace that
  *          started from t_position. if pt_basic_string == cpt_replace, then the behavior is undefined.
  */
 extern void basic_string_range_replace_substring(
     basic_string_t* pt_basic_string, basic_string_iterator_t it_begin, basic_string_iterator_t it_end,
-    const basic_string_t* cpt_replace, size_t t_position, size_t t_length);
+    const basic_string_t* cpt_replace, size_t t_pos, size_t t_len);
 
 /**
  * Replace elements in a basic_string at a specificed range with specificed value string.
@@ -1366,12 +1367,12 @@ extern void basic_string_range_replace_cstr(
  * @param it_begin            the position of first element in the range.
  * @param it_end              the position of first element beyond the range.
  * @param cpv_value_string    value string.
- * @param t_length            sub value string length.
+ * @param t_len            sub value string length.
  * @return void.
  * @remarks if pt_basic_string == NULL or cpv_value_string == NULL, then the behavior is undefined. pt_basic_string
  *          must be initialized, otherwise the behavior is undefined. the element type of basic_string and value string must
  *          be same, otherwise the behavior is undefined. [it_begin, it_end) must be valid range for pt_basic_string,
- *          otherwise the behavior is undefined. if t_length == NPOS or t_length is equal ot or greater than the length of
+ *          otherwise the behavior is undefined. if t_len == NPOS or t_len is equal ot or greater than the length of
  *          cpv_value_string, then use all cpv_value_string.
  */
 extern void basic_string_range_replace_subcstr(
@@ -1393,8 +1394,20 @@ extern void basic_string_range_replace_subcstr(
  *          belong to pt_basic_string, otherwise the behavior is undefined.
  */
 extern void basic_string_replace_range(
-    basic_string_t* pt_basic_string, basic_string_iterator_t t_begin, basic_string_iterator_t t_end,
-    basic_string_iterator_t t_first, basic_string_iterator_t t_last);
+    basic_string_t* pt_basic_string, basic_string_iterator_t it_begin, basic_string_iterator_t it_end,
+    basic_string_iterator_t it_first, basic_string_iterator_t it_last);
+
+/**
+ * Reset the size of basic_string elements.
+ * @param pt_basic_string   basic_string container.
+ * @param t_resize          new size of basic_string elements.
+ * @return void.
+ * @remarks if pt_basic_string == NULL or basic_string is uninitialized, then the behavior is undefined. the type of specificed
+ *          element and basic_string element type must be same, otherwise the behavior is undefined. the first specificed is
+ *          in use, others are not in use. if t_resize less than current basic_string size, then erase elmement from the end.
+ *          if t_resize greater than current basic_string size, then append elements to the end.
+ */
+extern void basic_string_resize(basic_string_t* pt_basic_string, size_t t_resize);
 
 #ifdef __cplusplus
 }

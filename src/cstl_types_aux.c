@@ -1,6 +1,6 @@
 /*
  *  The implementation of cstl types auxiliary functions.
- *  Copyright (C)  2008 - 2012  Wangbo
+ *  Copyright (C)  2008 - 2014  Wangbo
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -75,6 +75,9 @@
     }while(false)
 #define _TYPE_REGISTER_END()
 
+/* BKDR hash seed */
+#define _TYPE_HASH_BKDR_SEED    131
+
 /** local data type declaration and local struct, union, enum section **/
 
 /** local function prototype section **/
@@ -118,6 +121,9 @@ _typeregister_t _gt_typeregister = {false, {NULL}, {{NULL}, NULL, NULL, 0, 0, 0}
 _typeregister_t _gt_typeregister = {false, {NULL}, {0}};
 #endif
 
+_typecache_t    _gt_typecache[_TYPE_CACHE_COUNT] = {{'\0'}, {'\0'}, 0};
+size_t          _gt_typecache_index = 0;
+
 /** local global variable definition section **/
 
 /** exported function implementation section **/
@@ -126,18 +132,18 @@ _typeregister_t _gt_typeregister = {false, {NULL}, {0}};
  */
 size_t _type_hash(const char* s_typename)
 {
-    size_t t_namesum = 0;
-    size_t t_namelen = 0;
-    size_t i = 0;
+    /*
+     * Use BKDR hash function.
+     */
+    size_t t_hash = 0;
 
     assert(s_typename != NULL);
 
-    t_namelen = strlen(s_typename);
-    for (i = 0; i < t_namelen; ++i) {
-        t_namesum += (size_t)s_typename[i];
+    while (*s_typename) {
+        t_hash = t_hash * _TYPE_HASH_BKDR_SEED + (*s_typename++);
     }
 
-    return t_namesum % _TYPE_REGISTER_BUCKET_COUNT;
+    return t_hash % _TYPE_REGISTER_BUCKET_COUNT;
 }
 
 /**
@@ -149,10 +155,7 @@ _type_t* _type_is_registered(const char* s_typename)
     _typenode_t* pt_node = NULL;
 
     assert(s_typename != NULL);
-
-    if (strlen(s_typename) > _TYPE_NAME_SIZE) {
-        return NULL;
-    }
+    assert(strlen(s_typename) <= _TYPE_NAME_SIZE);
 
     /* get the registered type pointer */
     pt_node = _gt_typeregister._apt_bucket[_type_hash(s_typename)];
@@ -239,11 +242,30 @@ void _type_register_c_builtin(void)
     _TYPE_REGISTER_TYPE(long double, _LONG_DOUBLE_TYPE, long_double, _TYPE_C_BUILTIN);
     _TYPE_REGISTER_TYPE_NODE(long double, _LONG_DOUBLE_TYPE);
     /* register bool_t */
-    _TYPE_REGISTER_TYPE(bool_t, _BOOL_TYPE, bool, _TYPE_C_BUILTIN);
-    _TYPE_REGISTER_TYPE_NODE(bool_t, _BOOL_TYPE);
+    _TYPE_REGISTER_TYPE(bool_t, _CSTL_BOOL_TYPE, cstl_bool, _TYPE_C_BUILTIN);
+    _TYPE_REGISTER_TYPE_NODE(bool_t, _CSTL_BOOL_TYPE);
     /* register char* */
     _TYPE_REGISTER_TYPE(string_t, _C_STRING_TYPE, cstr, _TYPE_C_BUILTIN);
     _TYPE_REGISTER_TYPE_NODE(string_t, _C_STRING_TYPE);
+    /* register void* */
+    _TYPE_REGISTER_TYPE(void*, _POINTER_TYPE, pointer, _TYPE_C_BUILTIN);
+    _TYPE_REGISTER_TYPE_NODE(void*, _POINTER_TYPE);
+
+#ifndef _MSC_VER
+    /* register _Bool */
+    _TYPE_REGISTER_TYPE(_Bool, _BOOL_TYPE, bool, _TYPE_C_BUILTIN);
+    _TYPE_REGISTER_TYPE_NODE(_Bool, _BOOL_TYPE);
+    /* register long long */
+    _TYPE_REGISTER_TYPE(long long, _LONG_LONG_TYPE, long_long, _TYPE_C_BUILTIN);
+    _TYPE_REGISTER_TYPE_NODE(long long, _LONG_LONG_TYPE);
+    _TYPE_REGISTER_TYPE_NODE(long long int, _LONG_LONG_INT_TYPE);
+    _TYPE_REGISTER_TYPE_NODE(signed long long, _SIGNED_LONG_LONG_TYPE);
+    _TYPE_REGISTER_TYPE_NODE(signed long long int, _SIGNED_LONG_LONG_INT_TYPE);
+    /* register unsigned long long */
+    _TYPE_REGISTER_TYPE(unsigned long long, _UNSIGNED_LONG_LONG_TYPE, ulong_long, _TYPE_C_BUILTIN);
+    _TYPE_REGISTER_TYPE_NODE(unsigned long long, _UNSIGNED_LONG_LONG_TYPE);
+    _TYPE_REGISTER_TYPE_NODE(unsigned long long int, _UNSIGNED_LONG_LONG_INT_TYPE);
+#endif
 
     _TYPE_REGISTER_END();
 }
@@ -303,6 +325,12 @@ void _type_register_cstl_builtin(void)
     /* register string_t */
     _TYPE_REGISTER_TYPE(string_t, _STRING_TYPE, string, _TYPE_CSTL_BUILTIN);
     _TYPE_REGISTER_TYPE_NODE(string_t, _STRING_TYPE);
+    /* register range_t */
+    _TYPE_REGISTER_TYPE(range_t, _RANGE_TYPE, range, _TYPE_CSTL_BUILTIN);
+    _TYPE_REGISTER_TYPE_NODE(range_t, _RANGE_TYPE);
+    /* register basic_string_t */
+    _TYPE_REGISTER_TYPE(basic_string_t, _BASIC_STRING_TYPE, basic_string, _TYPE_CSTL_BUILTIN);
+    _TYPE_REGISTER_TYPE_NODE(basic_string_t, _BASIC_STRING_TYPE);
 
     /* register iterator_t */
     _TYPE_REGISTER_TYPE(iterator_t, _ITERATOR_TYPE, iterator, _TYPE_CSTL_BUILTIN);
@@ -325,8 +353,46 @@ void _type_register_cstl_builtin(void)
     _TYPE_REGISTER_TYPE_NODE(forward_iterator_t, _FORWARD_ITERATOR_TYPE);
     _TYPE_REGISTER_TYPE_NODE(bidirectional_iterator_t, _BIDIRECTIONAL_ITERATOR_TYPE);
     _TYPE_REGISTER_TYPE_NODE(random_access_iterator_t, _RANDOM_ACCESS_ITERATOR_TYPE);
+    _TYPE_REGISTER_TYPE_NODE(basic_string_iterator_t, _BASIC_STRING_ITERATOR_TYPE);
 
     _TYPE_REGISTER_END();
+}
+
+/**
+ * Find in type style cache and update cache.
+ */
+_typestyle_t _type_cache_find(const char* s_typename, char* s_formalname)
+{
+    size_t i = 0;
+
+    assert(s_typename != NULL);
+    assert(s_formalname != NULL);
+
+    for (i = 0; i < _TYPE_CACHE_COUNT; ++i) {
+        if (_gt_typecache[i]._t_style == _TYPE_INVALID) {
+            return _TYPE_INVALID;
+        } else if (strncmp(s_typename, _gt_typecache[i]._s_typename, _TYPE_NAME_SIZE) == 0) {
+            strncpy(s_formalname, _gt_typecache[i]._s_formalname, _TYPE_NAME_SIZE);
+            return _gt_typecache[i]._t_style;
+        }
+    }
+
+    return _TYPE_INVALID;
+}
+
+void _type_cache_update(const char* s_typename, const char* s_formalname, _typestyle_t t_style)
+{
+    assert(s_typename != NULL);
+    assert(strlen(s_typename) > 0);
+    assert(s_formalname != NULL);
+    assert(strlen(s_formalname) > 0);
+    assert(t_style == _TYPE_C_BUILTIN || t_style == _TYPE_USER_DEFINE || t_style == _TYPE_CSTL_BUILTIN);
+
+    strncpy(_gt_typecache[_gt_typecache_index]._s_typename, s_typename, _TYPE_NAME_SIZE);
+    strncpy(_gt_typecache[_gt_typecache_index]._s_formalname, s_formalname, _TYPE_NAME_SIZE);
+    _gt_typecache[_gt_typecache_index]._t_style = t_style;
+
+    _gt_typecache_index = (++_gt_typecache_index) % _TYPE_CACHE_COUNT;
 }
 
 /** eof **/

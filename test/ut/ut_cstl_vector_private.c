@@ -8,6 +8,7 @@
 #include "cstl/cstl_vector_iterator.h"
 #include "cstl/cvector.h"
 #include "cstl_vector_aux.h"
+#include "cstl/cstring.h"
 
 #include "ut_def.h"
 #include "ut_cstl_vector_private.h"
@@ -1156,12 +1157,14 @@ void test__vector_init_elem_auxiliary__successfully_int(void** state)
 
 void test__vector_init_elem_auxiliary__successfully_cstr(void** state)
 {
+    string_t elem;
     vector_t* pvec = create_vector(char*);
     vector_init_elem(pvec, 10, "abcdefg");
 
-    _vector_init_elem_auxiliary(pvec, pvec->_pby_start);
-    assert_true(strcmp((char*)vector_front(pvec), "") == 0);
+    _vector_init_elem_auxiliary(pvec, &elem);
+    assert_true(strcmp(string_c_str(&elem), "") == 0);
 
+    _string_destroy_auxiliary(&elem);
     vector_destroy(pvec);
 }
 

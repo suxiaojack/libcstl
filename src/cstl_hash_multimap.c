@@ -1,6 +1,6 @@
 /*
  *  The implementation of hash_multimap.
- *  Copyright (C)  2008 - 2012  Wangbo
+ *  Copyright (C)  2008 - 2013  Wangbo
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -25,17 +25,8 @@
 #include <cstl/cstl_alloc.h>
 #include <cstl/cstl_types.h>
 #include <cstl/citerator.h>
-
-#include <cstl/cvector.h>
-#include <cstl/cstl_hashtable_iterator.h>
-#include <cstl/cstl_hashtable_private.h>
-#include <cstl/cstl_hashtable.h>
-#include <cstl/cutility.h>
 #include <cstl/cstring.h>
-
-#include <cstl/cstl_hash_multimap_iterator.h>
-#include <cstl/cstl_hash_multimap_private.h>
-#include <cstl/cstl_hash_multimap.h>
+#include <cstl/chash_map.h>
 
 #include "cstl_hash_multimap_aux.h"
 
@@ -61,9 +52,9 @@ void hash_multimap_init(hash_multimap_t* phmmap_map)
 /**
  * Initialize hash_multimap container with user define compare function.
  */
-void hash_multimap_init_ex(hash_multimap_t* phmmap_map, size_t t_bucketcount, unary_function_t ufun_hash, binary_function_t bfun_compare)
+void hash_multimap_init_ex(hash_multimap_t* phmmap_map, size_t t_bucketcount, ufun_t ufun_hash, bfun_t bfun_compare)
 {
-    unary_function_t ufun_default_hash = NULL;
+    ufun_t ufun_default_hash = NULL;
 
     assert(phmmap_map != NULL);
     assert(_pair_is_created(&phmmap_map->_pair_temp));
@@ -129,9 +120,9 @@ void hash_multimap_init_copy_array(hash_multimap_t* phmmap_dest, const void* cpv
  * Initialize hash_multimap container with specific range and compare function.
  */
 void hash_multimap_init_copy_range_ex(hash_multimap_t* phmmap_dest, iterator_t it_begin, iterator_t it_end,
-    size_t t_bucketcount, unary_function_t ufun_hash, binary_function_t bfun_compare)
+    size_t t_bucketcount, ufun_t ufun_hash, bfun_t bfun_compare)
 {
-    unary_function_t ufun_default_hash = NULL;
+    ufun_t ufun_default_hash = NULL;
 
     assert(phmmap_dest != NULL);
     assert(_pair_is_created(&phmmap_dest->_pair_temp));
@@ -146,9 +137,9 @@ void hash_multimap_init_copy_range_ex(hash_multimap_t* phmmap_dest, iterator_t i
  * Initialize hash_multimap container with specific array and compare function.
  */
 void hash_multimap_init_copy_array_ex(hash_multimap_t* phmmap_dest, const void* cpv_array, size_t t_count,
-    size_t t_bucketcount, unary_function_t ufun_hash, binary_function_t bfun_compare)
+    size_t t_bucketcount, ufun_t ufun_hash, bfun_t bfun_compare)
 {
-    unary_function_t ufun_default_hash = NULL;
+    ufun_t ufun_default_hash = NULL;
 
     assert(phmmap_dest != NULL);
     assert(_pair_is_created(&phmmap_dest->_pair_temp));
@@ -237,7 +228,7 @@ size_t hash_multimap_bucket_count(const hash_multimap_t* cphmmap_map)
 /**
  * Return the hash function of value.
  */
-unary_function_t hash_multimap_hash(const hash_multimap_t* cphmmap_map)
+ufun_t hash_multimap_hash(const hash_multimap_t* cphmmap_map)
 {
     assert(cphmmap_map != NULL);
     assert(_pair_is_inited(&cphmmap_map->_pair_temp));
@@ -248,7 +239,7 @@ unary_function_t hash_multimap_hash(const hash_multimap_t* cphmmap_map)
 /**
  * Return the compare function of key.
  */
-binary_function_t hash_multimap_key_comp(const hash_multimap_t* cphmmap_map)
+bfun_t hash_multimap_key_comp(const hash_multimap_t* cphmmap_map)
 {
     assert(cphmmap_map != NULL);
     assert(_pair_is_inited(&cphmmap_map->_pair_temp));
@@ -263,7 +254,7 @@ binary_function_t hash_multimap_key_comp(const hash_multimap_t* cphmmap_map)
 /**
  * Return the compare function of value.
  */
-binary_function_t hash_multimap_value_comp(const hash_multimap_t* cphmmap_map)
+bfun_t hash_multimap_value_comp(const hash_multimap_t* cphmmap_map)
 {
 #ifdef NDEBUG
     void* pv_avoidwarning = (void*)cphmmap_map;

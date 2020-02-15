@@ -1,6 +1,6 @@
 /*
  *  The implementation of cstl types builtin functions.
- *  Copyright (C)  2008 - 2012  Wangbo
+ *  Copyright (C)  2008 - 2014  Wangbo
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -342,27 +342,53 @@ void _type_destroy_long_double(const void* cpv_input, void* pv_output)
 }
 
 /* bool_t */
-void _type_init_bool(const void* cpv_input, void* pv_output)
+void _type_init_cstl_bool(const void* cpv_input, void* pv_output)
 {
     assert(cpv_input != NULL && pv_output != NULL);
     *(bool_t*)cpv_input = false;
     *(bool_t*)pv_output = true;
 }
 
-void _type_copy_bool(const void* cpv_first, const void* cpv_second, void* pv_output)
+void _type_copy_cstl_bool(const void* cpv_first, const void* cpv_second, void* pv_output)
 {
     assert(cpv_first != NULL && cpv_second != NULL && pv_output != NULL);
     *(bool_t*)cpv_first = *(bool_t*)cpv_second;
     *(bool_t*)pv_output = true;
 }
 
-void _type_less_bool(const void* cpv_first, const void* cpv_second, void* pv_output)
+void _type_less_cstl_bool(const void* cpv_first, const void* cpv_second, void* pv_output)
 {
     assert(cpv_first != NULL && cpv_second != NULL && pv_output != NULL);
     *(bool_t*)pv_output = *(bool_t*)cpv_first < *(bool_t*)cpv_second ? true : false;
 }
 
-void _type_destroy_bool(const void* cpv_input, void* pv_output)
+void _type_destroy_cstl_bool(const void* cpv_input, void* pv_output)
+{
+    _type_destroy_default(cpv_input, pv_output);
+}
+
+/* void* */
+void _type_init_pointer(const void* cpv_input, void* pv_output)
+{
+    assert(cpv_input != NULL && pv_output != NULL);
+    *(void**)cpv_input = NULL;
+    *(bool_t*)pv_output = true;
+}
+
+void _type_copy_pointer(const void* cpv_first, const void* cpv_second, void* pv_output)
+{
+    assert(cpv_first != NULL && cpv_second != NULL && pv_output != NULL);
+    *(void**)cpv_first = *(void**)cpv_second;
+    *(bool_t*)pv_output = true;
+}
+
+void _type_less_pointer(const void* cpv_first, const void* cpv_second, void* pv_output)
+{
+    assert(cpv_first != NULL && cpv_second != NULL && pv_output != NULL);
+    *(bool_t*)pv_output = *(void**)cpv_first < *(void**)cpv_second ? true : false;
+}
+
+void _type_destroy_pointer(const void* cpv_input, void* pv_output)
 {
     _type_destroy_default(cpv_input, pv_output);
 }
@@ -618,7 +644,7 @@ void _type_copy_priority_queue(const void* cpv_first, const void* cpv_second, vo
 void _type_less_priority_queue(const void* cpv_first, const void* cpv_second, void* pv_output)
 {
     assert(cpv_first != NULL && cpv_second != NULL && pv_output != NULL);
-    *(bool_t*)pv_output = vector_less(&((priority_queue_t*)cpv_first)->_t_vector, &((priority_queue_t*)cpv_second)->_t_vector);
+    *(bool_t*)pv_output = vector_less(&((priority_queue_t*)cpv_first)->_vec_base, &((priority_queue_t*)cpv_second)->_vec_base);
 }
 
 void _type_destroy_priority_queue(const void* cpv_input, void* pv_output)
@@ -942,6 +968,39 @@ void _type_destroy_string(const void* cpv_input, void* pv_output)
     *(bool_t*)pv_output = true;
 }
 
+/* basic_string_t */
+void _type_init_basic_string(const void* cpv_input, void* pv_output)
+{
+    bool_t b_result = false;
+
+    assert(cpv_input != NULL && pv_output != NULL);
+
+    b_result = _create_basic_string_auxiliary((basic_string_t*)cpv_input, (char*)pv_output);
+    assert(b_result);
+    /* initialize basic_string_t */
+    basic_string_init((basic_string_t*)cpv_input);
+}
+
+void _type_copy_basic_string(const void* cpv_first, const void* cpv_second, void* pv_output)
+{
+    assert(cpv_first != NULL && cpv_second != NULL && pv_output != NULL);
+    basic_string_assign((basic_string_t*)cpv_first, (basic_string_t*)cpv_second);
+    *(bool_t*)pv_output = true;
+}
+
+void _type_less_basic_string(const void* cpv_first, const void* cpv_second, void* pv_output)
+{
+    assert(cpv_first != NULL && cpv_second != NULL && pv_output != NULL);
+    *(bool_t*)pv_output = basic_string_less((basic_string_t*)cpv_first, (basic_string_t*)cpv_second);
+}
+
+void _type_destroy_basic_string(const void* cpv_input, void* pv_output)
+{
+    assert(cpv_input != NULL && pv_output != NULL);
+    _basic_string_destroy_auxiliary((basic_string_t*)cpv_input);
+    *(bool_t*)pv_output = true;
+}
+
 /* iterator_t */
 void _type_init_iterator(const void* cpv_input, void* pv_output)
 {
@@ -972,6 +1031,117 @@ void _type_destroy_iterator(const void* cpv_input, void* pv_output)
 {
     _type_destroy_default(cpv_input, pv_output);
 }
+
+/* range_t */
+void _type_init_range(const void* cpv_input, void* pv_output)
+{
+    void* pv_avoidwarning = NULL;
+    bool_t b_result = sizeof(range_t);
+
+    assert(cpv_input != NULL && pv_output != NULL);
+
+    _type_init_default(cpv_input, &b_result);
+    pv_avoidwarning = (void*)pv_output;
+}
+
+void _type_copy_range(const void* cpv_first, const void* cpv_second, void* pv_output)
+{
+    assert(cpv_first != NULL && cpv_second != NULL && pv_output != NULL);
+    memcpy((range_t*)cpv_first, (range_t*)cpv_second, sizeof(range_t));
+    *(bool_t*)pv_output = true;
+}
+
+void _type_less_range(const void* cpv_first, const void* cpv_second, void* pv_output)
+{
+    assert(cpv_first != NULL && cpv_second != NULL && pv_output != NULL);
+    *(bool_t*)pv_output = memcmp((range_t*)cpv_first, (range_t*)cpv_second,
+        sizeof(range_t)) < 0 ? true : false;
+}
+
+void _type_destroy_range(const void* cpv_input, void* pv_output)
+{
+    _type_destroy_default(cpv_input, pv_output);
+}
+
+#ifndef _MSC_VER
+/* _Bool */
+void _type_init_bool(const void* cpv_input, void* pv_output)
+{
+    assert(cpv_input != NULL && pv_output != NULL);
+    *(_Bool*)cpv_input = false;
+    *(bool_t*)pv_output = true;
+}
+
+void _type_copy_bool(const void* cpv_first, const void* cpv_second, void* pv_output)
+{
+    assert(cpv_first != NULL && cpv_second != NULL && pv_output != NULL);
+    *(_Bool*)cpv_first = *(_Bool*)cpv_second;
+    *(bool_t*)pv_output = true;
+}
+
+void _type_less_bool(const void* cpv_first, const void* cpv_second, void* pv_output)
+{
+    assert(cpv_first != NULL && cpv_second != NULL && pv_output != NULL);
+    *(bool_t*)pv_output = *(_Bool*)cpv_first < *(_Bool*)cpv_second ? true : false;
+}
+
+void _type_destroy_bool(const void* cpv_input, void* pv_output)
+{
+    _type_destroy_default(cpv_input, pv_output);
+}
+
+/* long long */
+void _type_init_long_long(const void* cpv_input, void* pv_output)
+{
+    assert(cpv_input != NULL && pv_output != NULL);
+    *(long long*)cpv_input = false;
+    *(bool_t*)pv_output = true;
+}
+
+void _type_copy_long_long(const void* cpv_first, const void* cpv_second, void* pv_output)
+{
+    assert(cpv_first != NULL && cpv_second != NULL && pv_output != NULL);
+    *(long long*)cpv_first = *(long long*)cpv_second;
+    *(bool_t*)pv_output = true;
+}
+
+void _type_less_long_long(const void* cpv_first, const void* cpv_second, void* pv_output)
+{
+    assert(cpv_first != NULL && cpv_second != NULL && pv_output != NULL);
+    *(bool_t*)pv_output = *(long long*)cpv_first < *(long long*)cpv_second ? true : false;
+}
+
+void _type_destroy_long_long(const void* cpv_input, void* pv_output)
+{
+    _type_destroy_default(cpv_input, pv_output);
+}
+
+/* unsigned long long */
+void _type_init_ulong_long(const void* cpv_input, void* pv_output)
+{
+    assert(cpv_input != NULL && pv_output != NULL);
+    *(unsigned long long*)cpv_input = false;
+    *(bool_t*)pv_output = true;
+}
+
+void _type_copy_ulong_long(const void* cpv_first, const void* cpv_second, void* pv_output)
+{
+    assert(cpv_first != NULL && cpv_second != NULL && pv_output != NULL);
+    *(unsigned long long*)cpv_first = *(unsigned long long*)cpv_second;
+    *(bool_t*)pv_output = true;
+}
+
+void _type_less_ulong_long(const void* cpv_first, const void* cpv_second, void* pv_output)
+{
+    assert(cpv_first != NULL && cpv_second != NULL && pv_output != NULL);
+    *(bool_t*)pv_output = *(unsigned long long*)cpv_first < *(unsigned long long*)cpv_second ? true : false;
+}
+
+void _type_destroy_ulong_long(const void* cpv_input, void* pv_output)
+{
+    _type_destroy_default(cpv_input, pv_output);
+}
+#endif
 
 /** local function implementation section **/
 

@@ -1097,12 +1097,14 @@ void test__list_init_elem_auxiliary__successfully_int(void** state)
 
 void test__list_init_elem_auxiliary__successfully_cstr(void** state)
 {
+    string_t elem;
     list_t* plist = create_list(char*);
     list_init_elem(plist, 10, "abcdefg");
 
-    _list_init_elem_auxiliary(plist, plist->_pt_node->_pt_next->_pby_data);
-    assert_true(strcmp((char*)list_front(plist), "") == 0);
+    _list_init_elem_auxiliary(plist, &elem);
+    assert_true(strcmp(string_c_str(&elem), "") == 0);
 
+    _string_destroy_auxiliary(&elem);
     list_destroy(plist);
 }
 
@@ -1128,6 +1130,7 @@ void test__list_init_elem_auxiliary__successfully_container(void** state)
     assert_true(_list_is_inited(&list));
 
     list_destroy(plist);
+    _list_destroy_auxiliary(&list);
 }
 
 typedef struct _tag_test__list_init_elem_auxiliary__successfully_user_defined

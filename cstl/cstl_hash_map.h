@@ -1,6 +1,6 @@
 /*
  *  The interface of hash_map.
- *  Copyright (C)  2008 - 2012  Wangbo
+ *  Copyright (C)  2008 - 2014  Wangbo
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -110,7 +110,7 @@ extern void hash_map_init(hash_map_t* phmap_map);
  * @remarks if phmap_map == NULL, then the behavior is undefined, phmap_map must be created by create_map(), otherwise
  *          the behavior is undefined. if bfun_compare == NULL, the default compare function is used.
  */
-extern void hash_map_init_ex(hash_map_t* phmap_map, size_t t_bucketcount, unary_function_t ufun_hash, binary_function_t bfun_compare);
+extern void hash_map_init_ex(hash_map_t* phmap_map, size_t t_bucketcount, ufun_t ufun_hash, bfun_t bfun_compare);
 
 /**
  * Initialize hash_map container with hash_map.
@@ -133,7 +133,7 @@ extern void hash_map_init_copy(hash_map_t* phmap_dest, const hash_map_t* cphmap_
  *          the behavior is undefined. the type of [it_begin, it_end) and pmap_dest must be same, otherwise the behavior
  *          is undefined.
  */
-extern void hash_map_init_copy_range(hash_map_t* phmap_dest, iterator_t t_begin, iterator_t t_end);
+extern void hash_map_init_copy_range(hash_map_t* phmap_dest, iterator_t it_begin, iterator_t it_end);
 
 /**
  * Initialize hash_map container with specific array.
@@ -157,8 +157,8 @@ extern void hash_map_init_copy_array(hash_map_t* phmap_dest, const void* cpv_arr
  *          the behavior is undefined. is undefined. the type of [it_begin, it_end) and pmap_dest must be same, otherwise 
  *          the behavior is undefined. if bfun_compare == NULL, then use default compare function.
  */
-extern void hash_map_init_copy_range_ex(hash_map_t* phmap_dest, iterator_t t_begin, iterator_t t_end,
-    size_t t_bucketcount, unary_function_t ufun_hash, binary_function_t bfun_compare);
+extern void hash_map_init_copy_range_ex(hash_map_t* phmap_dest, iterator_t it_begin, iterator_t it_end,
+    size_t t_bucketcount, ufun_t ufun_hash, bfun_t bfun_compare);
 
 /**
  * Initialize hash_map container with specific array and compare function.
@@ -172,7 +172,7 @@ extern void hash_map_init_copy_range_ex(hash_map_t* phmap_dest, iterator_t t_beg
  *          is undefined. if bfun_compare == NULL, then use default compare function.
  */
 extern void hash_map_init_copy_array_ex(hash_map_t* phmap_dest, const void* cpv_array, size_t t_count,
-    size_t t_bucketcount, unary_function_t ufun_hash, binary_function_t bfun_compare);
+    size_t t_bucketcount, ufun_t ufun_hash, bfun_t bfun_compare);
 
 /**
  * Destroy hash_map.
@@ -246,7 +246,7 @@ extern size_t hash_map_bucket_count(const hash_map_t* cphmap_map);
  * @return compare function.
  * @remarks if cphmap_map == NULL, the behavior is undefined. cphmap_map must be initialized, otherwise the behavior is undefined.
  */
-extern unary_function_t hash_map_hash(const hash_map_t* cphmap_map);
+extern ufun_t hash_map_hash(const hash_map_t* cphmap_map);
 
 /**
  * Return the compare function of key.
@@ -254,7 +254,7 @@ extern unary_function_t hash_map_hash(const hash_map_t* cphmap_map);
  * @return compare function.
  * @remarks if cphmap_map == NULL, the behavior is undefined. cphmap_map must be initialized, otherwise the behavior is undefined.
  */
-extern binary_function_t hash_map_key_comp(const hash_map_t* cphmap_map);
+extern bfun_t hash_map_key_comp(const hash_map_t* cphmap_map);
 
 /**
  * Return the compare function of value.
@@ -262,7 +262,7 @@ extern binary_function_t hash_map_key_comp(const hash_map_t* cphmap_map);
  * @return compare function.
  * @remarks if cphmap_map == NULL, the behavior is undefined. cphmap_map must be initialized, otherwise the behavior is undefined.
  */
-extern binary_function_t hash_map_value_comp(const hash_map_t* cphmap_map);
+extern bfun_t hash_map_value_comp(const hash_map_t* cphmap_map);
 
 /**
  * Resize bucket count of hash map.
@@ -375,7 +375,7 @@ extern hash_map_iterator_t hash_map_insert(hash_map_t* phmap_map, const pair_t* 
  *          is undefined. the type of [it_begin, it_end) and cphmap_map must be same, otherwise the behavior is undefined.
  *          [it_begin, it_end) must be valid range, otherwise the behavior is undefine.
  */
-extern void hash_map_insert_range(hash_map_t* phmap_map, iterator_t t_begin, iterator_t t_end);
+extern void hash_map_insert_range(hash_map_t* phmap_map, iterator_t it_begin, iterator_t it_end);
 
 /**
  * Inserts an array of unique element into a hash_map.
@@ -397,7 +397,7 @@ extern void hash_map_insert_array(hash_map_t* phmap_map, const void* cpv_array, 
  * @remarks if phmap_map == NULL then the behavior is undefined. phmap_map must be initialized, otherwise the behavior
  *          is undefined. it_pos must be valid iterator, otherwise the behavior is undefined.
  */
-extern void hash_map_erase_pos(hash_map_t* phmap_map, hash_map_iterator_t t_pos);
+extern void hash_map_erase_pos(hash_map_t* phmap_map, hash_map_iterator_t it_pos);
 
 /*
  * Erase a range of element in an hash_map.
@@ -408,7 +408,7 @@ extern void hash_map_erase_pos(hash_map_t* phmap_map, hash_map_iterator_t t_pos)
  * @remarks if phmap_map == NULL then the behavior is undefined. phmap_map must be initialized, otherwise the behavior
  *          is undefined. [it_begin, it_end) must be valid range for phmap_map, otherwise the behavior is undefine.
  */
-extern void hash_map_erase_range(hash_map_t* phmap_map, hash_map_iterator_t t_begin, hash_map_iterator_t t_end);
+extern void hash_map_erase_range(hash_map_t* phmap_map, hash_map_iterator_t it_begin, hash_map_iterator_t it_end);
 
 /**
  * Erases all the elements of an hash_map.

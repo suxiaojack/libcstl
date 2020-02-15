@@ -1,6 +1,6 @@
 /*
  *  The implementation of hashtable iterator.
- *  Copyright (C)  2008 - 2012  Wangbo
+ *  Copyright (C)  2008 - 2014  Wangbo
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -25,16 +25,12 @@
 #include <cstl/cstl_alloc.h>
 #include <cstl/cstl_types.h>
 #include <cstl/citerator.h>
-
-#include <cstl/cstl_vector_iterator.h>
-#include <cstl/cstl_vector_private.h>
-#include <cstl/cstl_vector.h>
+#include <cstl/cvector.h>
+#include <cstl/cstring.h>
 
 #include <cstl/cstl_hashtable_iterator.h>
 #include <cstl/cstl_hashtable_private.h>
 #include <cstl/cstl_hashtable.h>
-
-#include <cstl/cstring.h>
 
 #include "cstl_hashtable_aux.h"
 
@@ -186,6 +182,7 @@ _hashtable_iterator_t _hashtable_iterator_prev(_hashtable_iterator_t it_iter)
 _hashtable_iterator_t _hashtable_iterator_next(_hashtable_iterator_t it_iter)
 {
     vector_iterator_t it_bucket;
+    vector_iterator_t it_end;
     _hashnode_t*      pt_node = NULL;
 
     assert(_hashtable_iterator_belong_to_hashtable(_HASHTABLE_ITERATOR_HASHTABLE(it_iter), it_iter));
@@ -198,8 +195,9 @@ _hashtable_iterator_t _hashtable_iterator_next(_hashtable_iterator_t it_iter)
         /* iterator from current bucket pos to end */
         it_bucket = vector_begin(&(_HASHTABLE_ITERATOR_HASHTABLE(it_iter)->_vec_bucket));
         _VECTOR_ITERATOR_COREPOS(it_bucket) = _HASHTABLE_ITERATOR_BUCKETPOS(it_iter);
+        it_end = vector_end(&(_HASHTABLE_ITERATOR_HASHTABLE(it_iter)->_vec_bucket));
         for (it_bucket = iterator_next(it_bucket);
-             !iterator_equal(it_bucket, vector_end(&(_HASHTABLE_ITERATOR_HASHTABLE(it_iter)->_vec_bucket)));
+             !iterator_equal(it_bucket, it_end);
              it_bucket = iterator_next(it_bucket)) {
             _HASHTABLE_ITERATOR_BUCKETPOS(it_iter) = _VECTOR_ITERATOR_COREPOS(it_bucket);
             if (*(_hashnode_t**)_HASHTABLE_ITERATOR_BUCKETPOS(it_iter) != NULL) {
@@ -207,7 +205,7 @@ _hashtable_iterator_t _hashtable_iterator_next(_hashtable_iterator_t it_iter)
                 break;
             }
         }
-        if (iterator_equal(it_bucket, vector_end(&(_HASHTABLE_ITERATOR_HASHTABLE(it_iter)->_vec_bucket)))) {
+        if (iterator_equal(it_bucket, it_end)) {
             assert((_hashnode_t*)_HASHTABLE_ITERATOR_COREPOS(it_iter) == pt_node);
             _HASHTABLE_ITERATOR_COREPOS(it_iter) = NULL;
             _HASHTABLE_ITERATOR_BUCKETPOS(it_iter) = _VECTOR_ITERATOR_COREPOS(it_bucket);
@@ -252,6 +250,7 @@ int _hashtable_iterator_distance(_hashtable_iterator_t it_first, _hashtable_iter
 bool_t _hashtable_iterator_before(_hashtable_iterator_t it_first, _hashtable_iterator_t it_second)
 {
     _hashtable_iterator_t it_iter;
+    _hashtable_iterator_t it_end;
     _hashtable_t*         pt_hashtable = NULL;
 
     assert(_hashtable_iterator_belong_to_hashtable(_HASHTABLE_ITERATOR_HASHTABLE(it_first), it_first));
@@ -263,15 +262,16 @@ bool_t _hashtable_iterator_before(_hashtable_iterator_t it_first, _hashtable_ite
     }
 
     pt_hashtable = _HASHTABLE_ITERATOR_HASHTABLE(it_first);
+    it_end = _hashtable_end(pt_hashtable);
     for (it_iter = it_first;
-         !_hashtable_iterator_equal(it_iter, _hashtable_end(pt_hashtable));
+         !_hashtable_iterator_equal(it_iter, it_end);
          it_iter = _hashtable_iterator_next(it_iter)) {
         if (_hashtable_iterator_equal(it_iter, it_second)) {
             return true;
         }
     }
 
-    if (_hashtable_iterator_equal(it_second, _hashtable_end(pt_hashtable))) {
+    if (_hashtable_iterator_equal(it_second, it_end)) {
         return true;
     } else {
         return false;
